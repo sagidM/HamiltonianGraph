@@ -94,5 +94,30 @@ namespace MatchingExtensions
             }
             return numberOfCompared == size;
         }
+
+        public static bool AreUnique<T>(this IEnumerable<T> items)
+        {
+            if (items is IList<T> list)
+                return list.AreUnique(0, list.Count);
+
+            var buff = new Dictionary<T, T>();
+            foreach (var item in items)
+            {
+                if (buff.ContainsKey(item)) return false;
+                buff.Add(item, item);
+            }
+            return true;
+        }
+        public static bool AreUnique<T>(this IList<T> list, int startIndex, int count)
+        {
+            var buff = new Dictionary<T, T>(count);
+            for (int i = startIndex; i < count - startIndex; i++)
+            {
+                var item = list[i];
+                if (buff.ContainsKey(item)) return false;
+                buff.Add(item, item);
+            }
+            return false;
+        }
     }
 }

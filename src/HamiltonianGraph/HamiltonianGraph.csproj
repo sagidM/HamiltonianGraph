@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9C011E0F-A7E7-47C3-8917-1B547E810E9F}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HamiltonianGraph</RootNamespace>
     <AssemblyName>HamiltonianGraph</AssemblyName>
@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BranchAndBound.cs" />
-    <Compile Include="Helper\MatrixHelper.cs" />
+    <Compile Include="Utils\GraphUtil.cs" />
     <Compile Include="LatinComposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace HamiltonianGraph.GraphInputProvider
+namespace HamiltonianGraph.Utils
 {
-    public static class MatrixHelper
+    internal static class GraphUtil
     {
         public static int?[,] FromMatrixFormat(Stream matrixAsStream)
         {

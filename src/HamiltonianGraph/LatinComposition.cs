@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace HamiltonianGraph
@@ -20,31 +19,7 @@ namespace HamiltonianGraph
             this.weights = weights;
         }
 
-        static void Main(string[] args)
-        {
-            var lines = File.ReadAllLines("in1.txt");
-            var n = int.Parse(lines[0]);
-            var weights = new int?[n, n];
-            for (int i = 0; i < n; i++)
-            {
-                int j = 0;
-                foreach (var s in lines[i + 1].Split(' '))
-                {
-                    if (s[0] != '-')
-                    {
-                        weights[i, j] = int.Parse(s);
-                    }
-                    j++;
-                }
-            }
-            var paths = new LatinComposition(weights).GetHamiltorianPaths();
-            foreach (var path in paths)
-            {
-                Console.WriteLine(string.Join("", path.Select(s => (char)(s + 'A'))));
-            }
-        }
-
-        public List<int[]> GetHamiltorianPaths()
+        public List<int[]> GetAllHamiltorianCycles()
         {
             var one = new List<int[]>[n, n];
             for (int i = 0; i < n; i++)
@@ -60,9 +35,9 @@ namespace HamiltonianGraph
             
             return GatherPaths(ceiledN, truncatedN);
         }
-        public int[] GetShortestHamiltorianPath()
+        public int[] GetShortestHamiltorianCycle()
         {
-            var paths = GetHamiltorianPaths();
+            var paths = GetAllHamiltorianCycles();
             return ShortestPath(paths, weights);
         }
 

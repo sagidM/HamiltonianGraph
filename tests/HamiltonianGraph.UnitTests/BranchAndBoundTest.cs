@@ -182,7 +182,7 @@ namespace HamiltonianGraph.UnitTests
         private static void GetShortestHamiltonianPathTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
-            var path = new BranchAndBound(matrix.Weights).GetShortestHamiltonianPath();
+            var path = new BranchAndBound(matrix.Weights).GetShortestHamiltonianCycle();
             var actualDistance = AdjacencyMatrix.PathDistance(path, matrix.Weights);
             var expectedDistance = matrix.ShortestPathDistance;
 

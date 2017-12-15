@@ -142,7 +142,7 @@ namespace HamiltonianGraph.UnitTests
         private void GetHamiltonianPathsTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
-            var actualPaths = new LatinComposition(matrix.Weights).GetHamiltorianPaths();
+            var actualPaths = new LatinComposition(matrix.Weights).GetAllHamiltorianCycles();
             var expectedPaths = matrix.AllPaths;
             // due to there can be not only one shortest path,
             // we compare distance between actual and expected shortest paths

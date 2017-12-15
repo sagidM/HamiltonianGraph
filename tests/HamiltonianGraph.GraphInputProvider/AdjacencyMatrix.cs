@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HamiltonianGraph.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace HamiltonianGraph.GraphInputProvider
         {
             // get weights
             var lines = ReadLinesFromBuiltInInput($"{CurrentNamespace}.inputs.in{inputNumber}.txt");
-            var weights = MatrixHelper.FromMatrixFormat(lines);
+            var weights = MatrixUtil.FromMatrixFormat(lines);
 
             // get paths
             lines = ReadLinesFromBuiltInInput($"{CurrentNamespace}.inputs.in{inputNumber}_res.txt");

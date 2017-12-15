@@ -20,7 +20,7 @@ namespace HamiltonianGraph
                 for (int j = 0; j < n; j++)
                     graph[i, j] = weights[i, j] ?? Infinity;
         }
-        public int[] GetShortestHamiltonianPath()
+        public int[] GetShortestHamiltonianCycle()
         {
             var states = new List<StateTree>(16)
             {
@@ -89,15 +89,15 @@ namespace HamiltonianGraph
                     edges[state.edge.from] = state.edge.to;
                 state = state.parent;
             }
-            var path = new int[n+1];
-            path[0] = 0;
+            var cycle = new int[n+1];
+            cycle[0] = 0;
             int k = 0;
             for (int i = 0; i < n; i++)
             {
                 k = edges[k];
-                path[i+1] = k;
+                cycle[i+1] = k;
             }
-            return path;
+            return cycle;
         }
 
         private static StateTree GetCheapestState(IList<StateTree> states)
@@ -208,14 +208,6 @@ namespace HamiltonianGraph
         }
 
         private static int?[,] Copy(int?[,] matrix) => (int?[,])matrix.Clone();
-
-        static void Main(string[] args)
-        {
-            //var matrix = AdjacencyMatrix.GetGraph(4);
-            //var a = new BranchAndBound(matrix.Weights).GetShortestHamiltonianPath();
-            //string value = string.Join("", a);
-            //Console.WriteLine(value);
-        }
 
         private class StateTree
         {

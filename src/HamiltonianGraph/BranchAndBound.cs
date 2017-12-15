@@ -7,7 +7,7 @@ namespace HamiltonianGraph
     {
         private readonly int n;
         private readonly int?[,] graph;
-        internal const int Infinity = int.MaxValue >> 1;
+        internal const int Infinity = int.MaxValue >> 2;
 
         public BranchAndBound(int?[,] weights)
         {
@@ -27,28 +27,26 @@ namespace HamiltonianGraph
                 new StateTree { fine = Reduction(graph), graph = graph, isCheapestChild = true, isSheet = true }
             };
             int n = this.n;
-            (int i, int j) maxZero = (-1, -1);
             StateTree state;
+            var zeros = new List<(int i, int j)>();
 
             while (true)
             {
                 state = GetCheapestState(states);
                 var g = Copy(state.graph);
 
-                var zeros = new List<(int, int)>();
+                zeros.Clear();
                 for (int i = 0; i < n; i++)
                     for (int j = 0; j < n; j++)
                         if (g[i, j] == 0) zeros.Add((i, j));
 
                 if (zeros.Count == 1)
-                {
-                    maxZero = zeros[0];
                     break;
-                }
 
                 // search maximum among minimums in zeros
                 int max = -1;
                 (int horizontal, int vertical) crossMins = (-1, -1);
+                (int i, int j) maxZero = (-1, -1);
                 foreach (var (i, j) in zeros)
                 {
                     var keeper = g[i, j];
@@ -82,7 +80,7 @@ namespace HamiltonianGraph
             }
 
             var edges = new int[n];
-            edges[maxZero.i] = maxZero.j;
+            edges[zeros[0].i] = zeros[0].j;
             for (int i = 0; i < n-1; i++)
             {
                 if (state.isCheapestChild)

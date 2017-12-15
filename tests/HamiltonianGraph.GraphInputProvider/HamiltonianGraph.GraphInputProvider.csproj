@@ -76,5 +76,11 @@
       <Name>HamiltonianGraph</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="inputs\in7.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="inputs\in7_res.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

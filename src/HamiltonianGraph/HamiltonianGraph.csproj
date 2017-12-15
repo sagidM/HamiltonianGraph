@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BranchAndBound.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Utils\GraphUtil.cs" />
     <Compile Include="LatinComposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

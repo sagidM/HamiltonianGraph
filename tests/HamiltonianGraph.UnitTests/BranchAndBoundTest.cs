@@ -159,6 +159,12 @@ namespace HamiltonianGraph.UnitTests
             GetShortestHamiltonianPathTest(6);
         }
 
+        [TestMethod]
+        public void GetShortestHamiltonianPathTest7()
+        {
+            GetShortestHamiltonianPathTest(7);
+        }
+
 
         /**
          * |- 2 3|

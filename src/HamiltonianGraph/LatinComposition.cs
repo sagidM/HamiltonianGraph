@@ -35,7 +35,7 @@ namespace HamiltonianGraph
             
             return GatherPaths(ceiledN, truncatedN);
         }
-        public int[] GetShortestHamiltorianCycle()
+        public int[] GetShortestHamiltonianCycle()
         {
             var paths = GetAllHamiltorianCycles();
             return ShortestPath(paths, weights);

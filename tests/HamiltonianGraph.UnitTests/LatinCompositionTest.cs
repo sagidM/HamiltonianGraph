@@ -139,6 +139,12 @@ namespace HamiltonianGraph.UnitTests
             GetHamiltonianPathsTest(6);
         }
 
+        [TestMethod]
+        public void GetHamiltonianPathsTest7()
+        {
+            GetHamiltonianPathsTest(7);
+        }
+
         private void GetHamiltonianPathsTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace HamiltonianGraph.Utils
 {
-    internal static class GraphUtil
+    public static class GraphUtil
     {
         public static int?[,] FromMatrixFormat(Stream matrixAsStream)
         {

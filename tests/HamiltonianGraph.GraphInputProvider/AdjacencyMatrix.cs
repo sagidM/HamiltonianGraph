@@ -19,7 +19,7 @@ namespace HamiltonianGraph.GraphInputProvider
         {
             // get weights
             var lines = ReadLinesFromBuiltInInput($"{CurrentNamespace}.inputs.in{inputNumber}.txt");
-            var weights = MatrixUtil.FromMatrixFormat(lines);
+            var weights = GraphUtil.FromMatrixFormat(lines);
 
             // get paths
             lines = ReadLinesFromBuiltInInput($"{CurrentNamespace}.inputs.in{inputNumber}_res.txt");

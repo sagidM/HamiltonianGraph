@@ -68,7 +68,7 @@ namespace HamiltonianGraph
                 var expensiveGraph = Copy(g);
                 CrossReduction(expensiveGraph, maxZero, crossMins);
                 RemoveCrossFromMatrix(g, maxZero);
-                
+
                 if (g[maxZero.j, maxZero.i].HasValue)
                     g[maxZero.j, maxZero.i] = Infinity;
 
@@ -81,19 +81,22 @@ namespace HamiltonianGraph
 
             var edges = new int[n];
             edges[zeros[0].i] = zeros[0].j;
-            for (int i = 0; i < n-1; i++)
+            for (int i = 0; i < n-1;)
             {
                 if (state.isCheapestChild)
+                {
                     edges[state.edge.from] = state.edge.to;
+                    i++;
+                }
                 state = state.parent;
             }
             var cycle = new int[n+1];
             cycle[0] = 0;
             int k = 0;
-            for (int i = 0; i < n; i++)
+            for (int i = 1; i <= n; i++)
             {
                 k = edges[k];
-                cycle[i+1] = k;
+                cycle[i] = k;
             }
             return cycle;
         }
@@ -159,19 +162,26 @@ namespace HamiltonianGraph
             Console.WriteLine();
         }
 
-        internal static void CrossReduction(int?[,] g, (int i, int j) pos, (int vertical, int horizontal) mins)
+        /// <summary>
+        /// Removse min.horizontal from pos.i line and
+        /// removes min.vertical from pos.j column
+        /// </summary>
+        internal static void CrossReduction(int?[,] g, (int i, int j) pos, (int horizontal, int vertical) mins)
         {
             int n = g.GetLength(0);
             for (int k = 0; k < n; k++)
             {
-                if (g[k, pos.j].HasValue)
-                    g[k, pos.j] -= mins.horizontal;
                 if (g[pos.i, k].HasValue)
-                    g[pos.i, k] -= mins.vertical;
+                    g[pos.i, k] -= mins.horizontal;
+                if (g[k, pos.j].HasValue)
+                    g[k, pos.j] -= mins.vertical;
             }
             g[pos.i, pos.j] = Infinity;
         }
 
+        /// <summary>
+        /// Sets null in line and column
+        /// </summary>
         internal static void RemoveCrossFromMatrix(int?[,] g, (int i, int j) pos)
         {
             int n = g.GetLength(0);
@@ -207,7 +217,7 @@ namespace HamiltonianGraph
 
         private static int?[,] Copy(int?[,] matrix) => (int?[,])matrix.Clone();
 
-        private class StateTree
+        private sealed class StateTree
         {
             public int fine;
             public int?[,] graph;
@@ -215,6 +225,15 @@ namespace HamiltonianGraph
             public bool isCheapestChild;
             public (int from, int to) edge;
             public StateTree parent;
+
+#if DEBUG
+            public static int next_id = 1;
+            public int id = next_id++;
+            public override string ToString()
+            {
+                return $"id: {id}, fine: {fine}, edge: {edge}, parent.id: {parent?.id.ToString() ?? "null"}";
+            }
+#endif
         }
     }
 }

@@ -16,6 +16,13 @@ namespace HamiltonianGraph
 0 4 4 - 3
 1 1 4 3 -
 ";
+//            g =
+//@"4
+//- 2 0 1
+//3 - 0 4
+//0 1 - 4
+//0 4 4 -
+//";
             int?[,] weights = GraphUtil.FromMatrixFormat(g);
             var paths = new int[][] 
             {

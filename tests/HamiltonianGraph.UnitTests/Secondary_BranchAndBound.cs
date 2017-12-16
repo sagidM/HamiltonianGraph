@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HamiltonianGraph.GraphInputProvider;
-using MatchingExtensions;
+﻿using MatchingExtensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HamiltonianGraph.UnitTests
 {
     [TestClass]
-    public class BranchAndBoundTest
+    public class Secondary_BranchAndBound
     {
         [TestMethod]
         public void ReductionTestSmall()
@@ -123,48 +122,6 @@ namespace HamiltonianGraph.UnitTests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest1()
-        {
-            GetShortestHamiltonianPathTest(1);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest2()
-        {
-            GetShortestHamiltonianPathTest(2);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest3()
-        {
-            GetShortestHamiltonianPathTest(3);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest4()
-        {
-            GetShortestHamiltonianPathTest(4);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest5()
-        {
-            GetShortestHamiltonianPathTest(5);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest6()
-        {
-            GetShortestHamiltonianPathTest(6);
-        }
-
-        [TestMethod]
-        public void GetShortestHamiltonianPathTest7()
-        {
-            GetShortestHamiltonianPathTest(7);
-        }
-
 
         /**
          * |- 2 3|
@@ -184,16 +141,5 @@ namespace HamiltonianGraph.UnitTests
             actualWeights[2, 1] = 3;
             return actualWeights;
         }
-
-        private static void GetShortestHamiltonianPathTest(int testNumber)
-        {
-            var matrix = AdjacencyMatrix.GetGraph(testNumber);
-            var path = new BranchAndBound(matrix.Weights).GetShortestHamiltonianCycle();
-            var actualDistance = AdjacencyMatrix.PathDistance(path, matrix.Weights);
-            var expectedDistance = matrix.ShortestPathDistance;
-
-            Assert.AreEqual(expectedDistance, actualDistance);
-        }
     }
-
 }

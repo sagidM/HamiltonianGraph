@@ -51,9 +51,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BranchAndBoundTest.cs" />
-    <Compile Include="LatinCompositionTest.cs" />
+    <Compile Include="Primary_BranchAndBound.cs" />
+    <Compile Include="Primary_LatinComposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Secondary_BranchAndBound.cs" />
+    <Compile Include="Secondary_LatinComposition.cs" />
+    <Compile Include="Compare_LC_And_BaB.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

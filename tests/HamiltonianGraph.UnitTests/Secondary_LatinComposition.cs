@@ -1,20 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
-using HamiltonianGraph.GraphInputProvider;
-using MatchingExtensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HamiltonianGraph.UnitTests
 {
     [TestClass]
-    public class LatinCompositionTest
+    public class Secondary_LatinComposition
     {
+
         [TestMethod]
         public void MergePathsTest()
         {
             var actual = LatinComposition.MergePaths(new int[] { 1, 2, 3 }, new int[] { 3, 4, 5 });
             var expected = new int[] { 1, 2, 3, 4, 5 };
-            
+
             Assert.IsTrue(actual.SequenceEqual(expected));
         }
 
@@ -88,7 +87,7 @@ namespace HamiltonianGraph.UnitTests
             GeneratePaths(e, 7, 2, 3);
             GeneratePaths(e, 7, 3, 4);
             GeneratePaths(e, 7, 2, 5);
-            
+
             var actual = LatinComposition.Sum(a, a, n);
             var en = e.GetEnumerator();
             foreach (var item in actual)
@@ -103,63 +102,6 @@ namespace HamiltonianGraph.UnitTests
             }
         }
 
-        [TestMethod]
-        public void GetHamiltonianPathsTest1()
-        {
-            GetHamiltonianPathsTest(1);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest2()
-        {
-            GetHamiltonianPathsTest(2);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest3()
-        {
-            GetHamiltonianPathsTest(3);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest4()
-        {
-            GetHamiltonianPathsTest(4);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest5()
-        {
-            GetHamiltonianPathsTest(5);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest6()
-        {
-            GetHamiltonianPathsTest(6);
-        }
-
-        [TestMethod]
-        public void GetHamiltonianPathsTest7()
-        {
-            GetHamiltonianPathsTest(7);
-        }
-
-        private void GetHamiltonianPathsTest(int testNumber)
-        {
-            var matrix = AdjacencyMatrix.GetGraph(testNumber);
-            var actualPaths = new LatinComposition(matrix.Weights).GetAllHamiltorianCycles();
-            var expectedPaths = matrix.AllPaths;
-            // due to there can be not only one shortest path,
-            // we compare distance between actual and expected shortest paths
-            int[] actualShortestPath = LatinComposition.ShortestPath(actualPaths, matrix.Weights);
-            var actualDistance = AdjacencyMatrix.PathDistance(actualShortestPath, matrix.Weights);
-            var expectedDistance = matrix.ShortestPathDistance;
-
-            Assert.IsTrue(expectedPaths.InnerSequencesEqualInSomeOrder(actualPaths));
-            Assert.AreEqual(expectedDistance, actualDistance);
-        }
-
         private static void GeneratePaths(List<int[]>[,] a, params int[] v)
         {
             if (a[v[0], v[v.Length - 1]] == null)
@@ -170,7 +112,7 @@ namespace HamiltonianGraph.UnitTests
 
         private static void GeneratePaths(List<int[]>[,] a, int i, int j)
         {
-            a[i,j] = new List<int[]> { new int[] { i, j } };
+            a[i, j] = new List<int[]> { new int[] { i, j } };
         }
     }
 }

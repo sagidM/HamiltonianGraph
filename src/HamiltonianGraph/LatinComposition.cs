@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HamiltonianGraph.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace HamiltonianGraph
             this.weights = weights;
         }
 
-        public List<int[]> GetAllHamiltorianCycles()
+        public IList<int[]> GetAllHamiltorianCycles()
         {
             var one = new List<int[]>[n, n];
             for (int i = 0; i < n; i++)
@@ -37,8 +38,8 @@ namespace HamiltonianGraph
         }
         public int[] GetShortestHamiltonianCycle()
         {
-            var paths = GetAllHamiltorianCycles();
-            return ShortestPath(paths, weights);
+            var cycles = GetAllHamiltorianCycles();
+            return GraphUtil.ShortestRoute(weights, cycles);
         }
 
         static internal List<int[]>[,] Sum(List<int[]>[,] a, List<int[]>[,] b, int n)
@@ -126,28 +127,6 @@ namespace HamiltonianGraph
             if (truncatedN << 1 != n)
                 GeneratePaths(truncatedN);
             pathsMatrixes[n] = Sum(pathsMatrixes[ceiledN], pathsMatrixes[truncatedN], this.n);
-        }
-
-        public static int[] ShortestPath(IList<int[]> paths, int?[,] weights)
-        {
-            int[] shortest = null;
-            var shortestDistance = int.MaxValue;
-
-            foreach (var path in paths)
-            {
-                // to count the distance
-                int distance = 0;
-                for (int i = 1; i < path.Length; i++)
-                {
-                    distance += weights[path[i - 1], path[i]].Value;
-                }
-                if (shortestDistance > distance)
-                {
-                    shortestDistance = distance;
-                    shortest = path;
-                }
-            }
-            return shortest;
         }
     }
 }

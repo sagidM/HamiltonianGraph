@@ -49,6 +49,18 @@ namespace HamiltonianGraph.UnitTests
             GetShortestHamiltonianPathTest(7);
         }
 
+        [TestMethod]
+        public void GetShortestHamiltonianPathTest8()
+        {
+            GetShortestHamiltonianPathTest(8);
+        }
+
+        [TestMethod]
+        public void GetShortestHamiltonianPathTest9()
+        {
+            GetShortestHamiltonianPathTest(9);
+        }
+
         private static void GetShortestHamiltonianPathTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);

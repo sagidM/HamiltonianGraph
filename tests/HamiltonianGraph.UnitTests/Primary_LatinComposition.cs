@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HamiltonianGraph.GraphInputProvider;
 using MatchingExtensions;
+using HamiltonianGraph.Utils;
 
 namespace HamiltonianGraph.UnitTests
 {
@@ -49,6 +50,18 @@ namespace HamiltonianGraph.UnitTests
             GetHamiltonianPathsTest(7);
         }
 
+        [TestMethod]
+        public void GetHamiltonianPathsTest8()
+        {
+            GetHamiltonianPathsTest(8);
+        }
+
+        [TestMethod]
+        public void GetHamiltonianPathsTest9()
+        {
+            GetHamiltonianPathsTest(9);
+        }
+
         private void GetHamiltonianPathsTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
@@ -56,7 +69,7 @@ namespace HamiltonianGraph.UnitTests
             var expectedPaths = matrix.AllPaths;
             // due to there can be not only one shortest path,
             // we compare distance between actual and expected shortest paths
-            int[] actualShortestPath = LatinComposition.ShortestPath(actualPaths, matrix.Weights);
+            int[] actualShortestPath = GraphUtil.ShortestRoute(matrix.Weights, actualPaths);
             var actualDistance = AdjacencyMatrix.PathDistance(actualShortestPath, matrix.Weights);
             var expectedDistance = matrix.ShortestPathDistance;
 

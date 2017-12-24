@@ -82,5 +82,11 @@
   <ItemGroup>
     <EmbeddedResource Include="inputs\in7_res.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="inputs\in8.txt" />
+    <EmbeddedResource Include="inputs\in8_res.txt" />
+    <EmbeddedResource Include="inputs\in9.txt" />
+    <EmbeddedResource Include="inputs\in9_res.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

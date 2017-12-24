@@ -22,9 +22,10 @@ namespace HamiltonianGraph
         }
         public int[] GetShortestHamiltonianCycle()
         {
+            // R - cost matrix
             var states = new List<StateTree>(16)
             {
-                new StateTree { fine = Reduction(graph), graph = graph, isCheapestChild = true, isSheet = true }
+                new StateTree { fine = Reduction(graph), graph = graph, isCheapestChild = true, isSheet = true, edge = (-1, -1) }
             };
             int n = this.n;
             StateTree state;
@@ -64,19 +65,53 @@ namespace HamiltonianGraph
                     g[i, j] = keeper;
                 }
 
-                g[maxZero.i, maxZero.j] = Infinity;
+                //Print(g);
                 var expensiveGraph = Copy(g);
+                expensiveGraph[maxZero.i, maxZero.j] = Infinity;
                 CrossReduction(expensiveGraph, maxZero, crossMins);
                 RemoveCrossFromMatrix(g, maxZero);
 
                 if (g[maxZero.j, maxZero.i].HasValue)
                     g[maxZero.j, maxZero.i] = Infinity;
+                int[] pathFromTo = new int[n + 1];
+                pathFromTo[maxZero.i+1] = maxZero.j+1;
+                int[] pathToFrom = new int[n + 1];
+                pathToFrom[maxZero.j+1] = maxZero.i+1;
+                int pathLength = 1;
+                var p = state;
+                while (p.parent != null)
+                {
+                    if (p.isCheapestChild)
+                    {
+                        pathLength++;
+                        var (from, to) = p.edge;
+                        from++; to++;
+                        pathFromTo[from] = to;
+                        pathToFrom[to] = from;
+                    }
+                    p = p.parent;
+                }
+                if (pathLength + 1 != n)
+                {
+                    int tail = maxZero.j+1;
+                    while (pathFromTo[tail] != 0)
+                        tail = pathFromTo[tail];
+                    int head = maxZero.i + 1;
+                    while (pathToFrom[head] != 0)
+                        head = pathToFrom[head];
+
+                    if (g[tail - 1, head - 1].HasValue)
+                        g[tail - 1, head - 1] = Infinity;
+                }
+                Console.WriteLine("\t" + maxZero + " " + (state.edge));
 
                 state.isSheet = false;
                 int newFine = Reduction(g);
 
                 states.Add(new StateTree { fine = state.fine + max, graph= expensiveGraph, isSheet=true, isCheapestChild = false, edge= maxZero, parent= state });
                 states.Add(new StateTree { fine = state.fine + newFine, graph= Copy(g), isSheet=true, isCheapestChild = true, edge= maxZero, parent= state });
+                //Console.WriteLine((state.fine + max) + " | " + (state.fine + newFine));
+                //Console.WriteLine(maxZero);
             }
 
             var edges = new int[n];
@@ -227,8 +262,8 @@ namespace HamiltonianGraph
             public StateTree parent;
 
 #if DEBUG
-            public static int next_id = 1;
-            public int id = next_id++;
+            public static int nextId = 1;
+            public int id = nextId++;
             public override string ToString()
             {
                 return $"id: {id}, fine: {fine}, edge: {edge}, parent.id: {parent?.id.ToString() ?? "null"}";

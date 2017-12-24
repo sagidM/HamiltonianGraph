@@ -77,7 +77,7 @@ namespace HamiltonianGraph.UnitTests
         [TestMethod]
         public void BaB_And_LC_7_100()
         {
-            Compare_BaB_And_LC(n: 7, maxRandomValue: 100, repeat: 100);
+            Compare_BaB_And_LC(n: 7, maxRandomValue: 100, repeat: 200);
         }
 
         [TestMethod]

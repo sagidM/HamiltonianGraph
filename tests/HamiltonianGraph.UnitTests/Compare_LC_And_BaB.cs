@@ -109,7 +109,7 @@ namespace HamiltonianGraph.UnitTests
             }
         }
 
-        private static int?[,] GenerateRandomFullGraph(int n, int maxRandomValue)
+        internal static int?[,] GenerateRandomFullGraph(int n, int maxRandomValue)
         {
             var weights = new int?[n, n];
             for (int i = 0; i < n; i++)

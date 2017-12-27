@@ -9,7 +9,7 @@ namespace HamiltonianGraph
     internal class Program
     {
         ///////////////////////////////////////
-        //      It's only for DEBUGGING      //
+        //  This file is only for DEBUGGING  //
         ///////////////////////////////////////
         static void Main(string[] args)
         {

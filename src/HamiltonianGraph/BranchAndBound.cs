@@ -7,7 +7,7 @@ namespace HamiltonianGraph
     public class BranchAndBound
     {
         private readonly int n;
-        private readonly int?[,] graph;
+        private readonly int[,] graph;
         internal const int Infinity = int.MaxValue >> 2;
 
         public BranchAndBound(int?[,] weights)
@@ -16,7 +16,7 @@ namespace HamiltonianGraph
             if (weights.GetLength(1) != n)
                 throw new ArgumentException("Dimension of matrix must be the same: NxN", nameof(weights));
 
-            graph = new int?[n, n];
+            graph = new int[n, n];
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
                     graph[i, j] = weights[i, j] ?? Infinity;
@@ -24,19 +24,16 @@ namespace HamiltonianGraph
         public int[] GetShortestHamiltonianCycle()
         {
             int n = this.n;
-            switch (n)
-            {
-                case 0: return new int[0];
-                case 1: return new[] { 0 };
-                case 2: return
-                            graph[0,1] < Infinity && graph[1,0] < Infinity
-                                ? new[] { 0, 1, 0 } : null;
-            }
+            if (n <= 1)
+                return null;
+            else if (n == 2)
+                return graph[0, 1] < Infinity && graph[1, 0] < Infinity
+                         ? new[] { 0, 1, 0 } : null;
 
             var sw = new System.Diagnostics.Stopwatch();
             StateTree state = new StateTree
             {
-                graph = graph, graph2 = graph, edge = (-1, -1),
+                graph = graph, edge = (-1, -1),
                 rowIndices = Enumerable.Range(0, n).ToArray(),
                 columnIndices = Enumerable.Range(0, n).ToArray(),
                 isCheapestChild = true, isSheet = true
@@ -62,7 +59,6 @@ namespace HamiltonianGraph
                 for (int i = 0; i < n; i++)
                     for (int j = 0; j < n; j++)
                         if (g[i, j] == 0) zeros.Add((i, j));
-                        else if (g[i, j] == null) throw new Exception("the null was found in the graph: " + i + "x" + j);
 
                 if (zeros.Count == 1)
                     break;
@@ -151,8 +147,7 @@ namespace HamiltonianGraph
 
                     var from = Array.BinarySearch(cheapestState.rowIndices, tail - 1);
                     var to = Array.BinarySearch(cheapestState.columnIndices, head - 1);
-                    if (g[from, to].HasValue)
-                        g[from, to] = Infinity;
+                    g[from, to] = Infinity;
                 }
                 // end subcycles
 
@@ -198,7 +193,7 @@ namespace HamiltonianGraph
 
         internal static int Reduction(StateTree state)
         {
-            int?[,] g = state.graph;
+            var g = state.graph;
             int sumOfMins = 0;
             int n = g.GetLength(0);
 
@@ -208,7 +203,6 @@ namespace HamiltonianGraph
                 if (minInRaw <= 0) continue;
                 for (int j = 0; j < n; j++)
                 {
-                    if (g[i, j] == null) continue;
                     g[i, j] -= minInRaw;
                 }
                 if (sumOfMins < Infinity)
@@ -221,7 +215,6 @@ namespace HamiltonianGraph
                 if (minInColumn <= 0) continue;
                 for (int j = 0; j < n; j++)
                 {
-                    if (g[j, i] == null) continue;
                     g[j, i] -= minInColumn;
                 }
                 if (sumOfMins < Infinity)
@@ -257,10 +250,8 @@ namespace HamiltonianGraph
             int n = g.GetLength(0);
             for (int k = 0; k < n; k++)
             {
-                if (g[pos.i, k].HasValue)
-                    g[pos.i, k] -= mins.horizontal;
-                if (g[k, pos.j].HasValue)
-                    g[k, pos.j] -= mins.vertical;
+                g[pos.i, k] -= mins.horizontal;
+                g[k, pos.j] -= mins.vertical;
             }
             g[pos.i, pos.j] = Infinity;
         }
@@ -270,9 +261,9 @@ namespace HamiltonianGraph
         /// </summary>
         internal static void RemoveCrossFromMatrix(StateTree state, (int i, int j) pos)
         {
-            int?[,] g = state.graph;
+            var g = state.graph;
             int n = g.GetLength(0);
-            var t = new int?[n-1, n-1];
+            var t = new int[n-1, n-1];
             //int[] r = new int[n - 1];
             for (int i = 0; i < n - 1; i++)
             {
@@ -281,8 +272,7 @@ namespace HamiltonianGraph
                 for (int j = 0; j < n - 1; j++)
                 {
                     int gj = (j < pos.j) ? j : j + 1;
-                    if (g[gi, gj].HasValue)
-                        t[i, j] = g[gi, gj].Value;
+                    t[i, j] = g[gi, gj];
                 }
             }
             state.graph = t;
@@ -293,25 +283,23 @@ namespace HamiltonianGraph
 
         internal static int MinInColumn(StateTree state, int columnIndex)
         {
-            int?[,] g = state.graph;
+            var g = state.graph;
             int min = Infinity + 1;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
             {
-                if (g[i, columnIndex] == null) continue;
-                min = Math.Min(min, g[i, columnIndex].Value);
+                min = Math.Min(min, g[i, columnIndex]);
             }
             return min == Infinity + 1 ? -1 : min;
         }
         internal static int MinInRow(StateTree state, int rowIndex)
         {
-            int?[,] g = state.graph;
+            var g = state.graph;
             int min = Infinity + 1;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
             {
-                if (g[rowIndex, i] == null) continue;
-                min = Math.Min(min, g[rowIndex, i].Value);
+                min = Math.Min(min, g[rowIndex, i]);
             }
             return min == Infinity + 1 ? -1 : min;
         }
@@ -330,8 +318,7 @@ namespace HamiltonianGraph
     internal sealed class StateTree : IComparable<StateTree>
     {
         public int fine;
-        public int?[,] graph;
-        public int?[,] graph2;
+        public int[,] graph;
         public int[] columnIndices;
         public int[] rowIndices;
         public bool isSheet;
@@ -342,7 +329,7 @@ namespace HamiltonianGraph
 #if DEBUG
         public static int nextId = 1;
         public int id = nextId++;
-        public string FT => parent.rowIndices[edge.from] + " => " + parent.columnIndices[edge.to];
+        public string GO => parent.rowIndices[edge.from] + " => " + parent.columnIndices[edge.to];
         public override string ToString()
         {
             return $"id: {id}, fine: {fine}, edge: {edge}, parent.id: {parent?.id.ToString() ?? "null"}";

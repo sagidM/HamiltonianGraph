@@ -127,6 +127,12 @@ namespace HamiltonianGraph.UnitTests
             Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 10, possibilityOfNull: 0.7);
         }
 
+        [TestMethod]
+        public void CompareWithNull_10_1000000_08()
+        {
+            Compare_BaB_And_LC(n: 10, maxRandomValue: 1000000, repeat: 10, possibilityOfNull: 0.8);
+        }
+
         private static void Compare_BaB_And_LC(int n, int maxRandomValue, int repeat, double possibilityOfNull)
         {
             for (int i = 0; i < repeat; i++)

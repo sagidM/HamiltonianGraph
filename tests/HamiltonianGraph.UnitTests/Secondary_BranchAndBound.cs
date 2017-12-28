@@ -125,8 +125,11 @@ namespace HamiltonianGraph.UnitTests
         [TestMethod]
         public void GetShortestHamiltonianPath_Huge()
         {
-            var weights = Compare_LC_And_BaB.GenerateRandomFullGraph(n: 43, maxRandomValue: 100);
-            var bb = new BranchAndBound(weights).GetShortestHamiltonianCycle();
+            for (int i = 43; i <= 43; i++)
+            {
+                var weights = Compare_LC_And_BaB.GenerateRandomFullGraph(n: 43, maxRandomValue: 100);
+                var bb = new BranchAndBound(weights).GetShortestHamiltonianCycle();
+            }
         }
 
 

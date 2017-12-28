@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HamiltonianGraph
 {
@@ -22,25 +23,32 @@ namespace HamiltonianGraph
         }
         public int[] GetShortestHamiltonianCycle()
         {
-            //var sw = new System.Diagnostics.Stopwatch();
-            // R - cost matrix
-            var stateHeap = new List<StateTree>(32)
-            {
-                new StateTree { fine = Reduction(graph), graph = graph, isCheapestChild = true, isSheet = true, edge = (-1, -1) }
-            };
+            var sw = new System.Diagnostics.Stopwatch();
             int n = this.n;
-            StateTree state;
+            StateTree state = new StateTree
+            {
+                graph = graph, graph2 = graph, edge = (-1, -1),
+                rowIndices = Enumerable.Range(0, n).ToArray(),
+                columnIndices = Enumerable.Range(0, n).ToArray(),
+                isCheapestChild = true, isSheet = true
+            };
+            state.fine = Reduction(state);
+            StateTree cachedCheapestState = null;
+            // R - cost matrix
+            var stateHeap = new List<StateTree>(32) { state };
             var zeros = new List<(int i, int j)>();
             int[] pathFromTo = new int[n + 1];
             int[] pathToFrom = new int[n + 1];
+            int[] minInColumnCached = new int[n];
 
             while (true)
             {
-                state = stateHeap.ShiftAndRelax();
-                var g = Copy(state.graph); // 0.07x
+                state = cachedCheapestState ?? stateHeap.ShiftAndRelax();
+                var g = Copy(state.graph); // 0.02
+                n = g.GetLength(0);
 
                 zeros.Clear();
-                // 0.17x
+                // 0.056
                 for (int i = 0; i < n; i++)
                     for (int j = 0; j < n; j++)
                         if (g[i, j] == 0) zeros.Add((i, j));
@@ -48,19 +56,29 @@ namespace HamiltonianGraph
                 if (zeros.Count == 1)
                     break;
 
+                var cheapestState = new StateTree
+                {
+                    fine = state.fine, graph = g, isCheapestChild = true, isSheet = true,
+                    rowIndices = Copy(state.rowIndices), columnIndices = Copy(state.columnIndices), parent = state
+                };
+
                 // search maximum among minimums in zeros
                 int max = -1;
                 (int horizontal, int vertical) crossMins = (-1, -1);
                 (int i, int j) maxZero = (-1, -1);
-                //sw.Start();
-                //sw.Stop();
+                (int i, int value) minInRowCached = (-1, 0);
+                Array.Clear(minInColumnCached, 0, n);
                 foreach (var (i, j) in zeros)
                 {
                     var keeper = g[i, j];
                     g[i, j] = Infinity;
-                    // 0.3x
-                    var horizontalMin = MinInRow(g, i);
-                    var verticalMin = MinInColumn(g, j);
+                    // 0.15
+                    if (minInRowCached.i != i)
+                        minInRowCached = (i, MinInRow(cheapestState, i));
+                    var horizontalMin = minInRowCached.value;
+                    if (minInColumnCached[j] == 0)
+                        minInColumnCached[j] = MinInColumn(cheapestState, j) + 1;
+                    var verticalMin = minInColumnCached[j] - 1;
 
                     if (max < horizontalMin + verticalMin)
                     {
@@ -71,65 +89,87 @@ namespace HamiltonianGraph
 
                     g[i, j] = keeper;
                 }
+                cheapestState.edge = maxZero;
 
                 //Print(g);
-                var expensiveGraph = Copy(g); // 0.07x
+                var expensiveGraph = Copy(g); // 0.05
                 expensiveGraph[maxZero.i, maxZero.j] = Infinity;
-                CrossReduction(expensiveGraph, maxZero, crossMins);
-                RemoveCrossFromMatrix(g, maxZero);
-
-
-                // prevent hamiltonian subcycles
-                if (g[maxZero.j, maxZero.i].HasValue)
-                    g[maxZero.j, maxZero.i] = Infinity;
-                Array.Clear(pathFromTo, 0, pathFromTo.Length);
-                Array.Clear(pathToFrom, 0, pathToFrom.Length);
-                pathFromTo[maxZero.i+1] = maxZero.j+1;
-                pathToFrom[maxZero.j+1] = maxZero.i+1;
-                int pathLength = 1;
-                var stateAncestor = state;
-                while (stateAncestor.parent != null)
+                var expensiveState = new StateTree
                 {
-                    if (stateAncestor.isCheapestChild)
+                    fine = state.fine + max, graph = expensiveGraph, isCheapestChild = false, isSheet = true, edge = maxZero,
+                    rowIndices = Copy(state.rowIndices), columnIndices = Copy(state.columnIndices), parent = state
+                };
+                CrossReduction(expensiveState, maxZero, crossMins);
+                var maxZeroReverse = maxZero;
+                maxZeroReverse.i = Array.BinarySearch(cheapestState.columnIndices, cheapestState.rowIndices[maxZero.i]);
+                maxZeroReverse.j = Array.BinarySearch(cheapestState.rowIndices, cheapestState.columnIndices[maxZero.j]);
+                if (maxZeroReverse.i >= 0 && maxZeroReverse.j >= 0)
+                    g[maxZeroReverse.j, maxZeroReverse.i] = Infinity;
+
+                sw.Start();
+                RemoveCrossFromMatrix(cheapestState, maxZero); // 0.1
+                sw.Stop();
+                g = cheapestState.graph;
+
+
+                // prevent subcycles
+                if (n != 2)
+                {
+                    Array.Clear(pathFromTo, 0, pathFromTo.Length);
+                    Array.Clear(pathToFrom, 0, pathToFrom.Length);
+                    var stateAncestor = cheapestState;
+                    while (stateAncestor.parent != null)
                     {
-                        pathLength++;
-                        var (from, to) = stateAncestor.edge;
-                        from++; to++;
-                        pathFromTo[from] = to;
-                        pathToFrom[to] = from;
+                        if (stateAncestor.isCheapestChild)
+                        {
+                            var (from1, to1) = stateAncestor.edge;
+                            from1 = stateAncestor.parent.rowIndices[from1];
+                            to1 = stateAncestor.parent.columnIndices[to1];
+                            from1++; to1++;
+                            pathFromTo[from1] = to1;
+                            pathToFrom[to1] = from1;
+                        }
+                        stateAncestor = stateAncestor.parent;
                     }
-                    stateAncestor = stateAncestor.parent;
-                }
-                if (pathLength + 1 != n)
-                {
-                    int tail = maxZero.j+1;
+                    int tail = cheapestState.parent.rowIndices[cheapestState.edge.from] + 1;
                     while (pathFromTo[tail] != 0)
                         tail = pathFromTo[tail];
-                    int head = maxZero.i + 1;
+                    int head = cheapestState.parent.columnIndices[cheapestState.edge.to] + 1;
                     while (pathToFrom[head] != 0)
                         head = pathToFrom[head];
 
-                    if (g[tail - 1, head - 1].HasValue)
-                        g[tail - 1, head - 1] = Infinity;
+                    var from = Array.BinarySearch(cheapestState.rowIndices, tail - 1);
+                    var to = Array.BinarySearch(cheapestState.columnIndices, head - 1);
+                    if (g[from, to].HasValue)
+                        g[from, to] = Infinity;
                 }
                 // end subcycles
 
                 state.isSheet = false;
-                var cheapestFine = Reduction(g);  // 0.24x
-
-                // 0.04x
-                stateHeap.AddAndSiftUp(new StateTree { fine = state.fine + max, graph= expensiveGraph, isSheet=true, isCheapestChild = false, edge= maxZero, parent= state });
-                stateHeap.AddAndSiftUp(new StateTree { fine = state.fine + cheapestFine, graph = g, isSheet = true, isCheapestChild = true, edge = maxZero, parent = state });
+                var cheapestFine = Reduction(cheapestState);  // 0.24x
+                
+                stateHeap.AddAndSiftUp(expensiveState);
+                cheapestState.fine += cheapestFine;
+                if (cheapestFine == 0)
+                {
+                    cachedCheapestState = cheapestState;
+                }
+                else
+                {
+                    stateHeap.AddAndSiftUp(cheapestState);
+                    cachedCheapestState = null;
+                }
             }
-            //System.Diagnostics.Debug.WriteLine(sw.Elapsed);
+            System.Diagnostics.Debug.WriteLine(sw.Elapsed);
 
+            n = this.n;
             var edges = new int[n];
-            edges[zeros[0].i] = zeros[0].j;
+            edges[state.rowIndices[zeros[0].i]] = state.columnIndices[zeros[0].j];
             for (int i = 0; i < n-1;)
             {
                 if (state.isCheapestChild)
                 {
-                    edges[state.edge.from] = state.edge.to;
+                    edges[state.parent.rowIndices[state.edge.from]] = state.parent.columnIndices[state.edge.to];
                     i++;
                 }
                 state = state.parent;
@@ -145,27 +185,15 @@ namespace HamiltonianGraph
             return cycle;
         }
 
-        private static StateTree GetCheapestState(IList<StateTree> states)
+        internal static int Reduction(StateTree state)
         {
-            // the last state is always a sheet
-            var cheapestState = states[states.Count - 1];
-            for (int i = 0; i < states.Count - 1; i++)
-            {
-                var state = states[i];
-                if (state.isSheet && cheapestState.fine > state.fine)
-                    cheapestState = state;
-            }
-            return cheapestState;
-        }
-
-        internal static int Reduction(int?[,] g)
-        {
+            int?[,] g = state.graph;
             int sumOfMins = 0;
             int n = g.GetLength(0);
 
             for (int i = 0; i < n; i++)
             {
-                int minInRaw = MinInRow(g, i);
+                int minInRaw = MinInRow(state, i);
                 if (minInRaw <= 0) continue;
                 for (int j = 0; j < n; j++)
                 {
@@ -177,7 +205,7 @@ namespace HamiltonianGraph
 
             for (int i = 0; i < n; i++)
             {
-                int minInColumn = MinInColumn(g, i);
+                int minInColumn = MinInColumn(state, i);
                 if (minInColumn <= 0) continue;
                 for (int j = 0; j < n; j++)
                 {
@@ -210,8 +238,9 @@ namespace HamiltonianGraph
         /// Removse min.horizontal from pos.i line and
         /// removes min.vertical from pos.j column
         /// </summary>
-        internal static void CrossReduction(int?[,] g, (int i, int j) pos, (int horizontal, int vertical) mins)
+        internal static void CrossReduction(StateTree state, (int i, int j) pos, (int horizontal, int vertical) mins)
         {
+            var g = state.graph;
             int n = g.GetLength(0);
             for (int k = 0; k < n; k++)
             {
@@ -226,18 +255,32 @@ namespace HamiltonianGraph
         /// <summary>
         /// Sets null in line and column
         /// </summary>
-        internal static void RemoveCrossFromMatrix(int?[,] g, (int i, int j) pos)
+        internal static void RemoveCrossFromMatrix(StateTree state, (int i, int j) pos)
         {
+            int?[,] g = state.graph;
             int n = g.GetLength(0);
-            for (int k = 0; k < n; k++)
+            var t = new int?[n-1, n-1];
+            //int[] r = new int[n - 1];
+            for (int i = 0; i < n - 1; i++)
             {
-                g[pos.i, k] = null;
-                g[k, pos.j] = null;
+                int gi = (i < pos.i) ? i : i + 1;
+               // r[i] = state.rowIndices[gi];
+                for (int j = 0; j < n - 1; j++)
+                {
+                    int gj = (j < pos.j) ? j : j + 1;
+                    if (g[gi, gj].HasValue)
+                        t[i, j] = g[gi, gj].Value;
+                }
             }
+            state.graph = t;
+            state.rowIndices = CopyExcept(state.rowIndices, pos.i);
+            //state.rowIndices = r;
+            state.columnIndices = CopyExcept(state.columnIndices, pos.j);
         }
 
-        internal static int MinInColumn(int?[,] g, int columnIndex)
+        internal static int MinInColumn(StateTree state, int columnIndex)
         {
+            int?[,] g = state.graph;
             int min = Infinity + 1;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
@@ -247,8 +290,9 @@ namespace HamiltonianGraph
             }
             return min == Infinity + 1 ? -1 : min;
         }
-        internal static int MinInRow(int?[,] g, int rowIndex)
+        internal static int MinInRow(StateTree state, int rowIndex)
         {
+            int?[,] g = state.graph;
             int min = Infinity + 1;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
@@ -259,14 +303,24 @@ namespace HamiltonianGraph
             return min == Infinity + 1 ? -1 : min;
         }
 
-        private static int?[,] Copy(int?[,] matrix) => (int?[,])matrix.Clone();
-
+        // ([0,1,2,3,4,5], 2) => [0,1,3,4,5]
+        private static int[] CopyExcept(int[] array, int exceptIndex)
+        {
+            var result = new int[array.Length-1];
+            Array.Copy(array, 0, result, 0, exceptIndex);
+            Array.Copy(array, exceptIndex+1, result, exceptIndex, result.Length - exceptIndex);
+            return result;
+        }
+        private static T Copy<T>(T matrix) where T : ICloneable => (T)matrix.Clone();
     }
 
     internal sealed class StateTree : IComparable<StateTree>
     {
         public int fine;
         public int?[,] graph;
+        public int?[,] graph2;
+        public int[] columnIndices;
+        public int[] rowIndices;
         public bool isSheet;
         public bool isCheapestChild;
         public (int from, int to) edge;
@@ -275,6 +329,7 @@ namespace HamiltonianGraph
 #if DEBUG
         public static int nextId = 1;
         public int id = nextId++;
+        public string FT => parent.rowIndices[edge.from] + " => " + parent.columnIndices[edge.to];
         public override string ToString()
         {
             return $"id: {id}, fine: {fine}, edge: {edge}, parent.id: {parent?.id.ToString() ?? "null"}";

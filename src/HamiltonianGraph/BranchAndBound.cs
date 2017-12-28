@@ -200,19 +200,19 @@ namespace HamiltonianGraph
             for (int i = 0; i < n; i++)
             {
                 int minInRaw = MinInRow(state, i);
-                if (minInRaw <= 0) continue;
+                if (minInRaw == 0) continue;
                 for (int j = 0; j < n; j++)
                 {
                     g[i, j] -= minInRaw;
                 }
-                if (sumOfMins < Infinity)
+                if (sumOfMins < Infinity)   // Stack Overflow
                     sumOfMins += minInRaw;
             }
 
             for (int i = 0; i < n; i++)
             {
                 int minInColumn = MinInColumn(state, i);
-                if (minInColumn <= 0) continue;
+                if (minInColumn == 0) continue;
                 for (int j = 0; j < n; j++)
                 {
                     g[j, i] -= minInColumn;
@@ -263,7 +263,7 @@ namespace HamiltonianGraph
         {
             var g = state.graph;
             int n = g.GetLength(0);
-            var t = new int[n-1, n-1];
+            var graphWithoutPos = new int[n - 1, n - 1];  // without row[i] and column[j]
             //int[] r = new int[n - 1];
             for (int i = 0; i < n - 1; i++)
             {
@@ -272,10 +272,10 @@ namespace HamiltonianGraph
                 for (int j = 0; j < n - 1; j++)
                 {
                     int gj = (j < pos.j) ? j : j + 1;
-                    t[i, j] = g[gi, gj];
+                    graphWithoutPos[i, j] = g[gi, gj];
                 }
             }
-            state.graph = t;
+            state.graph = graphWithoutPos;
             state.rowIndices = CopyExcept(state.rowIndices, pos.i);
             //state.rowIndices = r;
             state.columnIndices = CopyExcept(state.columnIndices, pos.j);
@@ -284,24 +284,24 @@ namespace HamiltonianGraph
         internal static int MinInColumn(StateTree state, int columnIndex)
         {
             var g = state.graph;
-            int min = Infinity + 1;
+            int min = Infinity;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
             {
                 min = Math.Min(min, g[i, columnIndex]);
             }
-            return min == Infinity + 1 ? -1 : min;
+            return min;
         }
         internal static int MinInRow(StateTree state, int rowIndex)
         {
             var g = state.graph;
-            int min = Infinity + 1;
+            int min = Infinity;
             int n = g.GetLength(0);
             for (int i = 0; i < n; i++)
             {
                 min = Math.Min(min, g[rowIndex, i]);
             }
-            return min == Infinity + 1 ? -1 : min;
+            return min;
         }
 
         // ([0,1,2,3,4,5], 2) => [0,1,3,4,5]
@@ -338,6 +338,8 @@ namespace HamiltonianGraph
 
         public int CompareTo(StateTree other)
         {
+            if (fine == other.fine)
+                return graph.GetLength(0) - other.graph.GetLength(0);
             return fine - other.fine;
         }
     }

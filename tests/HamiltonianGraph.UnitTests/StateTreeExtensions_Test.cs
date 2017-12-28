@@ -31,9 +31,10 @@ namespace HamiltonianGraph.UnitTests
         {
             var states = new List<StateTree>();
             int[] fines = new[] { 3, 66, 3, 78, 3 };
+            var mock = new int[0,0];
             foreach (var fine in fines)
             {
-                states.AddAndSiftUp(new StateTree { fine = fine });
+                states.AddAndSiftUp(new StateTree { fine = fine, graph = mock });
             }
             Array.Sort(fines);
 

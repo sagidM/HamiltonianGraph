@@ -22,7 +22,7 @@ namespace HamiltonianGraph
         }
         public int[] GetShortestHamiltonianCycle()
         {
-            //var sw = new System.Diagnostics.Stopwatch();
+            var sw = new System.Diagnostics.Stopwatch();
             // R - cost matrix
             var stateHeap = new List<StateTree>(32)
             {
@@ -33,6 +33,7 @@ namespace HamiltonianGraph
             var zeros = new List<(int i, int j)>();
             int[] pathFromTo = new int[n + 1];
             int[] pathToFrom = new int[n + 1];
+            int[] minInColumnCached = new int[n];
 
             while (true)
             {
@@ -52,15 +53,21 @@ namespace HamiltonianGraph
                 int max = -1;
                 (int horizontal, int vertical) crossMins = (-1, -1);
                 (int i, int j) maxZero = (-1, -1);
-                //sw.Start();
-                //sw.Stop();
+                (int i, int value) minInRowCached = (-1, 0);
+                Array.Clear(minInColumnCached, 0, n);
                 foreach (var (i, j) in zeros)
                 {
                     var keeper = g[i, j];
                     g[i, j] = Infinity;
                     // 0.3x
-                    var horizontalMin = MinInRow(g, i);
-                    var verticalMin = MinInColumn(g, j);
+                    //sw.Start();
+                    if (minInRowCached.i != i)
+                        minInRowCached = (i, MinInRow(g, i));
+                    var horizontalMin = minInRowCached.value;
+                    if (minInColumnCached[j] == 0)
+                        minInColumnCached[j] = MinInColumn(g, j) + 1;
+                    var verticalMin = minInColumnCached[j] - 1;
+                    //sw.Stop();
 
                     if (max < horizontalMin + verticalMin)
                     {
@@ -121,7 +128,7 @@ namespace HamiltonianGraph
                 stateHeap.AddAndSiftUp(new StateTree { fine = state.fine + max, graph= expensiveGraph, isSheet=true, isCheapestChild = false, edge= maxZero, parent= state });
                 stateHeap.AddAndSiftUp(new StateTree { fine = state.fine + cheapestFine, graph = g, isSheet = true, isCheapestChild = true, edge = maxZero, parent = state });
             }
-            //System.Diagnostics.Debug.WriteLine(sw.Elapsed);
+            System.Diagnostics.Debug.WriteLine(sw.Elapsed);
 
             var edges = new int[n];
             edges[zeros[0].i] = zeros[0].j;

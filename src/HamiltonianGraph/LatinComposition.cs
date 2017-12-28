@@ -39,7 +39,7 @@ namespace HamiltonianGraph
         public int[] GetShortestHamiltonianCycle()
         {
             var cycles = GetAllHamiltorianCycles();
-            return GraphUtil.ShortestRoute(weights, cycles);
+            return cycles.Count == 0 ? null : GraphUtil.ShortestRoute(weights, cycles);
         }
 
         static internal List<int[]>[,] Sum(List<int[]>[,] a, List<int[]>[,] b, int n)

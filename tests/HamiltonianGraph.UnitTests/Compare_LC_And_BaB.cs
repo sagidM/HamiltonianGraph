@@ -109,6 +109,65 @@ namespace HamiltonianGraph.UnitTests
             }
         }
 
+        [TestMethod]
+        public void CompareWithNull_10_10_05()
+        {
+            Compare_BaB_And_LC(n: 10, maxRandomValue: 10, repeat: 100, possibilityOfNull: 0.5);
+        }
+
+        [TestMethod]
+        public void CompareWithNull_10_100_04()
+        {
+            Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 100, possibilityOfNull: 0.4);
+        }
+
+        [TestMethod]
+        public void CompareWithNull_10_100_07()
+        {
+            Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 10, possibilityOfNull: 0.7);
+        }
+
+        private static void Compare_BaB_And_LC(int n, int maxRandomValue, int repeat, double possibilityOfNull)
+        {
+            for (int i = 0; i < repeat; i++)
+            {
+                var weights = GenerateRandomGraph(n, maxRandomValue, possibilityOfNull);
+                var lc = new LatinComposition(weights).GetShortestHamiltonianCycle();
+                var bb = new BranchAndBound(weights).GetShortestHamiltonianCycle();
+                if (lc == null && bb == null) continue;
+                //var s = "";
+                //for (int j = 0; j < n; j++)
+                //{
+                //    var v = new string[n];
+                //    for (int k = 0; k < n; k++)
+                //    {
+                //        v[k] = weights[j, k]?.ToString() ?? "-";
+                //    }
+                //    s += string.Join(" ", v) + "\n";
+                //}
+                //System.IO.File.WriteAllText("D:/1.txt", s);
+
+                var lcDistance = AdjacencyMatrix.PathDistance(lc, weights);
+                var bbDistance = AdjacencyMatrix.PathDistance(bb, weights);
+
+                var msg = lcDistance == bbDistance ? "" : "\nLC is expected;\nB&B is actual\n" + ToString(weights);
+                Assert.AreEqual(lcDistance, bbDistance, msg);
+            }
+        }
+
+        internal static int?[,] GenerateRandomGraph(int n, int maxRandomValue, double possibilityOfNull)
+        {
+            var weights = new int?[n, n];
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (i == j || Random.NextDouble() > possibilityOfNull) continue;
+                    weights[i, j] = Random.Next(n);
+                }
+            }
+            return weights;
+        }
         internal static int?[,] GenerateRandomFullGraph(int n, int maxRandomValue)
         {
             var weights = new int?[n, n];

@@ -23,8 +23,17 @@ namespace HamiltonianGraph
         }
         public int[] GetShortestHamiltonianCycle()
         {
-            var sw = new System.Diagnostics.Stopwatch();
             int n = this.n;
+            switch (n)
+            {
+                case 0: return new int[0];
+                case 1: return new[] { 0 };
+                case 2: return
+                            graph[0,1] < Infinity && graph[1,0] < Infinity
+                                ? new[] { 0, 1, 0 } : null;
+            }
+
+            var sw = new System.Diagnostics.Stopwatch();
             StateTree state = new StateTree
             {
                 graph = graph, graph2 = graph, edge = (-1, -1),
@@ -33,9 +42,9 @@ namespace HamiltonianGraph
                 isCheapestChild = true, isSheet = true
             };
             state.fine = Reduction(state);
-            StateTree cachedCheapestState = null;
+            StateTree cachedCheapestState = state;
             // R - cost matrix
-            var stateHeap = new List<StateTree>(32) { state };
+            var stateHeap = new List<StateTree>(32);
             var zeros = new List<(int i, int j)>();
             int[] pathFromTo = new int[n + 1];
             int[] pathToFrom = new int[n + 1];
@@ -44,6 +53,7 @@ namespace HamiltonianGraph
             while (true)
             {
                 state = cachedCheapestState ?? stateHeap.ShiftAndRelax();
+                if (state.fine >= Infinity) return null;
                 var g = Copy(state.graph); // 0.02
                 n = g.GetLength(0);
 
@@ -52,6 +62,7 @@ namespace HamiltonianGraph
                 for (int i = 0; i < n; i++)
                     for (int j = 0; j < n; j++)
                         if (g[i, j] == 0) zeros.Add((i, j));
+                        else if (g[i, j] == null) throw new Exception("the null was found in the graph: " + i + "x" + j);
 
                 if (zeros.Count == 1)
                     break;
@@ -200,7 +211,8 @@ namespace HamiltonianGraph
                     if (g[i, j] == null) continue;
                     g[i, j] -= minInRaw;
                 }
-                sumOfMins += minInRaw;
+                if (sumOfMins < Infinity)
+                    sumOfMins += minInRaw;
             }
 
             for (int i = 0; i < n; i++)
@@ -212,7 +224,8 @@ namespace HamiltonianGraph
                     if (g[j, i] == null) continue;
                     g[j, i] -= minInColumn;
                 }
-                sumOfMins += minInColumn;
+                if (sumOfMins < Infinity)
+                    sumOfMins += minInColumn;
             }
 
             return sumOfMins;

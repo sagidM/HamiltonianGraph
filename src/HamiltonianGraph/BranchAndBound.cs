@@ -31,17 +31,17 @@ namespace HamiltonianGraph
                          ? new[] { 0, 1, 0 } : null;
 
             var sw = new System.Diagnostics.Stopwatch();
-            StateTree state = new StateTree
+            StateNode state = new StateNode
             {
                 graph = graph, edge = (-1, -1),
                 rowIndices = Enumerable.Range(0, n).ToArray(),
                 columnIndices = Enumerable.Range(0, n).ToArray(),
                 isCheapestChild = true, isSheet = true
             };
-            state.fine = Reduction(state);
-            StateTree cachedCheapestState = state;
+            state.fine = Reduction(state.graph);
+            StateNode cachedCheapestState = state;
             // R - cost matrix
-            var stateHeap = new List<StateTree>(32);
+            var statesHeap = new List<StateNode>(32);
             var zeros = new List<(int i, int j)>();
             int[] pathFromTo = new int[n + 1];
             int[] pathToFrom = new int[n + 1];
@@ -49,8 +49,9 @@ namespace HamiltonianGraph
 
             while (true)
             {
-                state = cachedCheapestState ?? stateHeap.ShiftAndRelax();
+                state = cachedCheapestState ?? statesHeap.ShiftAndRelax();
                 if (state.fine >= Infinity) return null;
+                // "g" is just a simple name for cheapestState.graph
                 var g = Copy(state.graph); // 0.02
                 n = g.GetLength(0);
 
@@ -63,7 +64,7 @@ namespace HamiltonianGraph
                 if (zeros.Count == 1)
                     break;
 
-                var cheapestState = new StateTree
+                var cheapestState = new StateNode
                 {
                     fine = state.fine, graph = g, isCheapestChild = true, isSheet = true,
                     rowIndices = Copy(state.rowIndices), columnIndices = Copy(state.columnIndices), parent = state
@@ -81,10 +82,10 @@ namespace HamiltonianGraph
                     g[i, j] = Infinity;
                     // 0.15
                     if (minInRowCached.i != i)
-                        minInRowCached = (i, MinInRow(cheapestState, i));
+                        minInRowCached = (i, MinInRow(matrix: g, rowIndex: i));
                     var horizontalMin = minInRowCached.value;
                     if (minInColumnCached[j] == 0)
-                        minInColumnCached[j] = MinInColumn(cheapestState, j) + 1;
+                        minInColumnCached[j] = MinInColumn(matrix: g, columnIndex: j) + 1;
                     var verticalMin = minInColumnCached[j] - 1;
 
                     if (max < horizontalMin + verticalMin)
@@ -101,12 +102,12 @@ namespace HamiltonianGraph
                 //Print(g);
                 var expensiveGraph = Copy(g); // 0.05
                 expensiveGraph[maxZero.i, maxZero.j] = Infinity;
-                var expensiveState = new StateTree
+                var expensiveState = new StateNode
                 {
                     fine = state.fine + max, graph = expensiveGraph, isCheapestChild = false, isSheet = true, edge = maxZero,
                     rowIndices = Copy(state.rowIndices), columnIndices = Copy(state.columnIndices), parent = state
                 };
-                CrossReduction(expensiveState, maxZero, crossMins);
+                SubstractCross(expensiveState.graph, maxZero, crossMins);
                 var maxZeroReverse = maxZero;
                 maxZeroReverse.i = Array.BinarySearch(cheapestState.columnIndices, cheapestState.rowIndices[maxZero.i]);
                 maxZeroReverse.j = Array.BinarySearch(cheapestState.rowIndices, cheapestState.columnIndices[maxZero.j]);
@@ -114,9 +115,9 @@ namespace HamiltonianGraph
                     g[maxZeroReverse.j, maxZeroReverse.i] = Infinity;
 
                 sw.Start();
-                RemoveCrossFromMatrix(cheapestState, maxZero); // 0.1
+                UpdateStateNodeWithCrossClippedGraph(cheapestState, cutPosition: maxZero); // 0.1
+                g = cheapestState.graph; // method above creates a new instance of graph
                 sw.Stop();
-                g = cheapestState.graph;
 
 
                 // prevent subcycles
@@ -152,9 +153,9 @@ namespace HamiltonianGraph
                 // end subcycles
 
                 state.isSheet = false;
-                var cheapestFine = Reduction(cheapestState);  // 0.24x
-                
-                stateHeap.AddAndSiftUp(expensiveState);
+                statesHeap.AddAndSiftUp(expensiveState);
+
+                var cheapestFine = Reduction(g);  // 0.24x
                 cheapestState.fine += cheapestFine;
                 if (cheapestFine == 0)
                 {
@@ -162,7 +163,7 @@ namespace HamiltonianGraph
                 }
                 else
                 {
-                    stateHeap.AddAndSiftUp(cheapestState);
+                    statesHeap.AddAndSiftUp(cheapestState);
                     cachedCheapestState = null;
                 }
             }
@@ -191,19 +192,18 @@ namespace HamiltonianGraph
             return cycle;
         }
 
-        internal static int Reduction(StateTree state)
+        internal static int Reduction(int[,] matrix)
         {
-            var g = state.graph;
             int sumOfMins = 0;
-            int n = g.GetLength(0);
+            int n = matrix.GetLength(0);
 
             for (int i = 0; i < n; i++)
             {
-                int minInRaw = MinInRow(state, i);
+                int minInRaw = MinInRow(matrix, rowIndex: i);
                 if (minInRaw == 0) continue;
                 for (int j = 0; j < n; j++)
                 {
-                    g[i, j] -= minInRaw;
+                    matrix[i, j] -= minInRaw;
                 }
                 if (sumOfMins < Infinity)   // Stack Overflow
                     sumOfMins += minInRaw;
@@ -211,11 +211,11 @@ namespace HamiltonianGraph
 
             for (int i = 0; i < n; i++)
             {
-                int minInColumn = MinInColumn(state, i);
+                int minInColumn = MinInColumn(matrix, columnIndex: i);
                 if (minInColumn == 0) continue;
                 for (int j = 0; j < n; j++)
                 {
-                    g[j, i] -= minInColumn;
+                    matrix[j, i] -= minInColumn;
                 }
                 if (sumOfMins < Infinity)
                     sumOfMins += minInColumn;
@@ -244,62 +244,60 @@ namespace HamiltonianGraph
         /// Removse min.horizontal from pos.i line and
         /// removes min.vertical from pos.j column
         /// </summary>
-        internal static void CrossReduction(StateTree state, (int i, int j) pos, (int horizontal, int vertical) mins)
+        internal static void SubstractCross(int[,] matrix, (int i, int j) pos, (int horizontal, int vertical) mins)
         {
-            var g = state.graph;
-            int n = g.GetLength(0);
+            int n = matrix.GetLength(0);
             for (int k = 0; k < n; k++)
             {
-                g[pos.i, k] -= mins.horizontal;
-                g[k, pos.j] -= mins.vertical;
+                matrix[pos.i, k] -= mins.horizontal;
+                matrix[k, pos.j] -= mins.vertical;
             }
-            g[pos.i, pos.j] = Infinity;
+            matrix[pos.i, pos.j] = Infinity;
         }
 
         /// <summary>
-        /// Sets null in line and column
+        /// Provides a new inctance of graph without i row and j column.
+        /// Also creates suited row's and column's indices
         /// </summary>
-        internal static void RemoveCrossFromMatrix(StateTree state, (int i, int j) pos)
+        internal static void UpdateStateNodeWithCrossClippedGraph(StateNode stateNode, (int i, int j) cutPosition)
         {
-            var g = state.graph;
+            var g = stateNode.graph;
             int n = g.GetLength(0);
             var graphWithoutPos = new int[n - 1, n - 1];  // without row[i] and column[j]
             //int[] r = new int[n - 1];
             for (int i = 0; i < n - 1; i++)
             {
-                int gi = (i < pos.i) ? i : i + 1;
+                int gi = (i < cutPosition.i) ? i : i + 1;
                // r[i] = state.rowIndices[gi];
                 for (int j = 0; j < n - 1; j++)
                 {
-                    int gj = (j < pos.j) ? j : j + 1;
+                    int gj = (j < cutPosition.j) ? j : j + 1;
                     graphWithoutPos[i, j] = g[gi, gj];
                 }
             }
-            state.graph = graphWithoutPos;
-            state.rowIndices = CopyExcept(state.rowIndices, pos.i);
+            stateNode.graph = graphWithoutPos;
+            stateNode.rowIndices = CopyExcept(stateNode.rowIndices, cutPosition.i);
             //state.rowIndices = r;
-            state.columnIndices = CopyExcept(state.columnIndices, pos.j);
+            stateNode.columnIndices = CopyExcept(stateNode.columnIndices, cutPosition.j);
         }
 
-        internal static int MinInColumn(StateTree state, int columnIndex)
+        internal static int MinInColumn(int[,] matrix, int columnIndex)
         {
-            var g = state.graph;
             int min = Infinity;
-            int n = g.GetLength(0);
+            int n = matrix.GetLength(0);
             for (int i = 0; i < n; i++)
             {
-                min = Math.Min(min, g[i, columnIndex]);
+                min = Math.Min(min, matrix[i, columnIndex]);
             }
             return min;
         }
-        internal static int MinInRow(StateTree state, int rowIndex)
+        internal static int MinInRow(int[,] matrix, int rowIndex)
         {
-            var g = state.graph;
             int min = Infinity;
-            int n = g.GetLength(0);
+            int n = matrix.GetLength(0);
             for (int i = 0; i < n; i++)
             {
-                min = Math.Min(min, g[rowIndex, i]);
+                min = Math.Min(min, matrix[rowIndex, i]);
             }
             return min;
         }
@@ -315,7 +313,7 @@ namespace HamiltonianGraph
         private static T Copy<T>(T matrix) where T : ICloneable => (T)matrix.Clone();
     }
 
-    internal sealed class StateTree : IComparable<StateTree>
+    internal sealed class StateNode : IComparable<StateNode>
     {
         public int fine;
         public int[,] graph;
@@ -324,7 +322,7 @@ namespace HamiltonianGraph
         public bool isSheet;
         public bool isCheapestChild;
         public (int from, int to) edge;
-        public StateTree parent;
+        public StateNode parent;
 
 #if DEBUG
         public static int nextId = 1;
@@ -336,7 +334,7 @@ namespace HamiltonianGraph
         }
 #endif
 
-        public int CompareTo(StateTree other)
+        public int CompareTo(StateNode other)
         {
             if (fine == other.fine)
                 return graph.GetLength(0) - other.graph.GetLength(0);
@@ -345,31 +343,31 @@ namespace HamiltonianGraph
     }
 
     // work with heap
-    internal static class StateTreeExtensions
+    internal static class StateNodeExtensions
     {
         // fine in ascending order excluding sheet
         // e.g. states[0] would be with smallest fine
-        public static void AddAndSiftUp(this List<StateTree> states, StateTree newState)
+        public static void AddAndSiftUp(this List<StateNode> statesHeap, StateNode newState)
         {
-            states.Add(newState);
-            int pos = states.Count - 1;
+            statesHeap.Add(newState);
+            int pos = statesHeap.Count - 1;
             while (pos > 0)
             {
                 int parent = pos - (pos % 2 == 0 ? 2 : 1) >> 1;
-                if (states[pos].CompareTo(states[parent]) >= 0)
+                if (statesHeap[pos].CompareTo(statesHeap[parent]) >= 0)
                     break;
-                var t = states[pos];
-                states[pos] = states[parent];
-                states[parent] = t;
+                var t = statesHeap[pos];
+                statesHeap[pos] = statesHeap[parent];
+                statesHeap[parent] = t;
                 pos = parent;
             }
         }
-        public static StateTree ShiftAndRelax(this List<StateTree> states)
+        public static StateNode ShiftAndRelax(this List<StateNode> statesHeap)
         {
-            int lastIndex = states.Count - 1;
-            var result = states[0];
-            states[0] = states[lastIndex];
-            states[lastIndex] = result;
+            int lastIndex = statesHeap.Count - 1;
+            var result = statesHeap[0];
+            statesHeap[0] = statesHeap[lastIndex];
+            statesHeap[lastIndex] = result;
 
             int parent = 0;
             while (true)
@@ -379,25 +377,25 @@ namespace HamiltonianGraph
                 if (left >= lastIndex) break;
                 if (right == lastIndex)
                 {
-                    if (states[parent].CompareTo(states[left]) > 0)
+                    if (statesHeap[parent].CompareTo(statesHeap[left]) > 0)
                     {
-                        var t = states[parent];
-                        states[parent] = states[left];
-                        states[left] = t;
+                        var t = statesHeap[parent];
+                        statesHeap[parent] = statesHeap[left];
+                        statesHeap[left] = t;
                     }
                     break;
                 }
 
-                var better = states[left].CompareTo(states[right]) < 0 ? left : right;
-                if (states[parent].CompareTo(states[better]) <= 0) break;
+                var better = statesHeap[left].CompareTo(statesHeap[right]) < 0 ? left : right;
+                if (statesHeap[parent].CompareTo(statesHeap[better]) <= 0) break;
 
-                var t1 = states[parent];
-                states[parent] = states[better];
-                states[better] = t1;
+                var t1 = statesHeap[parent];
+                statesHeap[parent] = statesHeap[better];
+                statesHeap[better] = t1;
                 parent = better;
             }
 
-            states.RemoveAt(lastIndex);
+            statesHeap.RemoveAt(lastIndex);
             return result;
         }
     }

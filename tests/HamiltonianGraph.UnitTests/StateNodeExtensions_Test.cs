@@ -10,31 +10,31 @@ namespace HamiltonianGraph.UnitTests
         [TestMethod]
         public void AddAndSiftUp()
         {
-            var states = new List<StateTree>();
-            states.AddAndSiftUp(new StateTree { fine = 3 });
-            states.AddAndSiftUp(new StateTree { fine = 12 });
+            var states = new List<StateNode>();
+            states.AddAndSiftUp(new StateNode { fine = 3 });
+            states.AddAndSiftUp(new StateNode { fine = 12 });
             Assert.AreEqual(3, states[0].fine);
 
-            states.AddAndSiftUp(new StateTree { fine = 15 });
-            states.AddAndSiftUp(new StateTree { fine = 7 });
-            states.AddAndSiftUp(new StateTree { fine = 8 });
+            states.AddAndSiftUp(new StateNode { fine = 15 });
+            states.AddAndSiftUp(new StateNode { fine = 7 });
+            states.AddAndSiftUp(new StateNode { fine = 8 });
             Assert.AreEqual(3, states[0].fine);
 
-            states.AddAndSiftUp(new StateTree { fine = 2 });
+            states.AddAndSiftUp(new StateNode { fine = 2 });
             Assert.AreEqual(2, states[0].fine);
-            states.AddAndSiftUp(new StateTree { fine = 1 });
+            states.AddAndSiftUp(new StateNode { fine = 1 });
             Assert.AreEqual(1, states[0].fine);
         }
 
         [TestMethod]
         public void ShiftAndRelax()
         {
-            var states = new List<StateTree>();
+            var states = new List<StateNode>();
             int[] fines = new[] { 3, 66, 3, 78, 3 };
             var mock = new int[0,0];
             foreach (var fine in fines)
             {
-                states.AddAndSiftUp(new StateTree { fine = fine, graph = mock });
+                states.AddAndSiftUp(new StateNode { fine = fine, graph = mock });
             }
             Array.Sort(fines);
 

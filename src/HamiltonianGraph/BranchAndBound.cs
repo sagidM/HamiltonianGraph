@@ -31,32 +31,35 @@ namespace HamiltonianGraph
                          ? new[] { 0, 1, 0 } : null;
 
             var sw = new System.Diagnostics.Stopwatch();
-            StateNode state = new StateNode
+            StateNode cachedCheapestState = new StateNode
             {
                 graph = graph, edge = (-1, -1),
                 rowIndices = Enumerable.Range(0, n).ToArray(),
                 columnIndices = Enumerable.Range(0, n).ToArray(),
                 isCheapestChild = true, isSheet = true
             };
-            state.fine = Reduction(state.graph);
-            StateNode cachedCheapestState = state;
-            // R - cost matrix
+            cachedCheapestState.fine = Reduction(cachedCheapestState.graph);
+
+            // R - cost tree
             var statesHeap = new List<StateNode>(32);
             var zeros = new List<(int i, int j)>();
-            int[] pathFromTo = new int[n + 1];
-            int[] pathToFrom = new int[n + 1];
+            int[] pathFromToBuff = new int[n + 1];
+            int[] pathToFromBuff = new int[n + 1];
             int[] minInColumnCached = new int[n];
+            StateNode state = null;
 
             while (true)
             {
+                sw.Start();
                 state = cachedCheapestState ?? statesHeap.ShiftAndRelax();
+                sw.Stop();
                 if (state.fine >= Infinity) return null;
                 // "g" is just a simple name for cheapestState.graph
                 var g = Copy(state.graph); // 0.02
                 n = g.GetLength(0);
 
                 zeros.Clear();
-                // 0.056
+                // 0.02
                 for (int i = 0; i < n; i++)
                     for (int j = 0; j < n; j++)
                         if (g[i, j] == 0) zeros.Add((i, j));
@@ -76,11 +79,11 @@ namespace HamiltonianGraph
                 (int i, int j) maxZero = (-1, -1);
                 (int i, int value) minInRowCached = (-1, 0);
                 Array.Clear(minInColumnCached, 0, n);
+                // 0.053
                 foreach (var (i, j) in zeros)
                 {
                     var keeper = g[i, j];
                     g[i, j] = Infinity;
-                    // 0.15
                     if (minInRowCached.i != i)
                         minInRowCached = (i, MinInRow(matrix: g, rowIndex: i));
                     var horizontalMin = minInRowCached.value;
@@ -100,7 +103,7 @@ namespace HamiltonianGraph
                 cheapestState.edge = maxZero;
 
                 //Print(g);
-                var expensiveGraph = Copy(g); // 0.05
+                var expensiveGraph = Copy(g); // ~ 0.014
                 expensiveGraph[maxZero.i, maxZero.j] = Infinity;
                 var expensiveState = new StateNode
                 {
@@ -108,54 +111,25 @@ namespace HamiltonianGraph
                     rowIndices = Copy(state.rowIndices), columnIndices = Copy(state.columnIndices), parent = state
                 };
                 SubstractCross(expensiveState.graph, maxZero, crossMins);
-                var maxZeroReverse = maxZero;
-                maxZeroReverse.i = Array.BinarySearch(cheapestState.columnIndices, cheapestState.rowIndices[maxZero.i]);
-                maxZeroReverse.j = Array.BinarySearch(cheapestState.rowIndices, cheapestState.columnIndices[maxZero.j]);
-                if (maxZeroReverse.i >= 0 && maxZeroReverse.j >= 0)
-                    g[maxZeroReverse.j, maxZeroReverse.i] = Infinity;
 
-                sw.Start();
-                UpdateStateNodeWithCrossClippedGraph(cheapestState, cutPosition: maxZero); // 0.1
-                g = cheapestState.graph; // method above creates a new instance of graph
-                sw.Stop();
-
-
-                // prevent subcycles
-                if (n != 2)
+                var rowIndex = Array.BinarySearch(cheapestState.rowIndices, cheapestState.columnIndices[maxZero.j]);
+                if (rowIndex >= 0)
                 {
-                    Array.Clear(pathFromTo, 0, pathFromTo.Length);
-                    Array.Clear(pathToFrom, 0, pathToFrom.Length);
-                    var stateAncestor = cheapestState;
-                    while (stateAncestor.parent != null)
-                    {
-                        if (stateAncestor.isCheapestChild)
-                        {
-                            var (from1, to1) = stateAncestor.edge;
-                            from1 = stateAncestor.parent.rowIndices[from1];
-                            to1 = stateAncestor.parent.columnIndices[to1];
-                            from1++; to1++;
-                            pathFromTo[from1] = to1;
-                            pathToFrom[to1] = from1;
-                        }
-                        stateAncestor = stateAncestor.parent;
-                    }
-                    int tail = cheapestState.parent.rowIndices[cheapestState.edge.from] + 1;
-                    while (pathFromTo[tail] != 0)
-                        tail = pathFromTo[tail];
-                    int head = cheapestState.parent.columnIndices[cheapestState.edge.to] + 1;
-                    while (pathToFrom[head] != 0)
-                        head = pathToFrom[head];
-
-                    var from = Array.BinarySearch(cheapestState.rowIndices, tail - 1);
-                    var to = Array.BinarySearch(cheapestState.columnIndices, head - 1);
-                    g[from, to] = Infinity;
+                    var columnIndex = Array.BinarySearch(cheapestState.columnIndices, cheapestState.rowIndices[maxZero.i]);
+                    if (columnIndex >= 0)
+                        g[rowIndex, columnIndex] = Infinity;
                 }
-                // end subcycles
+
+                UpdateStateNodeWithCrossClippedGraph(cheapestState, cutPosition: maxZero); // 0.048
+                g = cheapestState.graph; // method above creates a new instance of graph
+
+
+                PreventSubcycles(cheapestState, pathFromToBuff, pathToFromBuff);
 
                 state.isSheet = false;
                 statesHeap.AddAndSiftUp(expensiveState);
 
-                var cheapestFine = Reduction(g);  // 0.24x
+                var cheapestFine = Reduction(g);  // 0.043
                 cheapestState.fine += cheapestFine;
                 if (cheapestFine == 0)
                 {
@@ -170,6 +144,8 @@ namespace HamiltonianGraph
             System.Diagnostics.Debug.WriteLine(sw.Elapsed);
 
             n = this.n;
+
+            // gather nodes
             var edges = new int[n];
             edges[state.rowIndices[zeros[0].i]] = state.columnIndices[zeros[0].j];
             for (int i = 0; i < n-1;)
@@ -181,6 +157,8 @@ namespace HamiltonianGraph
                 }
                 state = state.parent;
             }
+
+            // make cycle from gathered nodes
             var cycle = new int[n+1];
             cycle[0] = 0;
             int edgeFrom = 0;
@@ -190,6 +168,39 @@ namespace HamiltonianGraph
                 cycle[i] = edgeFrom;
             }
             return cycle;
+        }
+
+        // Complexity: O(state depth)
+        private static void PreventSubcycles(StateNode state, int[] pathFromToBuff, int[] pathToFromBuff)
+        {
+            if (state.graph.Length == 1)
+                return;
+
+            Array.Clear(pathFromToBuff, 1, pathFromToBuff.Length - 1);
+            Array.Clear(pathToFromBuff, 1, pathToFromBuff.Length - 1);
+            var stateAncestor = state;
+            while (stateAncestor.parent != null)
+            {
+                if (stateAncestor.isCheapestChild)
+                {
+                    var (from, to) = stateAncestor.edge;
+                    from = stateAncestor.parent.rowIndices[from] + 1;
+                    to = stateAncestor.parent.columnIndices[to] + 1;
+                    pathFromToBuff[from] = to;
+                    pathToFromBuff[to] = from;
+                }
+                stateAncestor = stateAncestor.parent;
+            }
+            int tail = state.parent.rowIndices[state.edge.from] + 1;
+            while (pathFromToBuff[tail] != 0)
+                tail = pathFromToBuff[tail];
+            int head = state.parent.columnIndices[state.edge.to] + 1;
+            while (pathToFromBuff[head] != 0)
+                head = pathToFromBuff[head];
+
+            tail = Array.BinarySearch(state.rowIndices, tail - 1);
+            head = Array.BinarySearch(state.columnIndices, head - 1);
+            state.graph[tail, head] = Infinity;
         }
 
         internal static int Reduction(int[,] matrix)

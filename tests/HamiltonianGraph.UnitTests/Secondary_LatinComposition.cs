@@ -7,7 +7,6 @@ namespace HamiltonianGraph.UnitTests
     [TestClass]
     public class Secondary_LatinComposition
     {
-
         [TestMethod]
         public void MergePathsTest()
         {
@@ -113,6 +112,26 @@ namespace HamiltonianGraph.UnitTests
         private static void GeneratePaths(List<int[]>[,] a, int i, int j)
         {
             a[i, j] = new List<int[]> { new int[] { i, j } };
+        }
+
+        [TestMethod]
+        public void LC_Huge()
+        {
+//            string s = 
+//@"5
+//- 1 1 1 -
+//1 - 1 - 1
+//1 1 - - 1
+//1 - 1 - 1
+//1 1 1 - -";
+//            int?[,] m = Utils.GraphUtil.FromMatrixFormat(s);
+//            new LatinComposition(m).GetAllHamiltorianCycles();
+//            return;
+            for (int i = 10; i <= 10; i++)
+            {
+                var weights = Compare_LC_And_BaB.GenerateRandomFullGraph(n: i, maxRandomValue: 100);
+                var bb = new LatinComposition(weights).GetAllHamiltorianCycles();
+            }
         }
     }
 }

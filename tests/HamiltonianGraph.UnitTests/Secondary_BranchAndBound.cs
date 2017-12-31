@@ -142,7 +142,7 @@ namespace HamiltonianGraph.UnitTests
         }
 
         [TestMethod]
-        public void GetShortestHamiltonianPath_Huge()
+        public void BaB_Huge()
         {
             for (int i = 43; i <= 43; i++)
             {

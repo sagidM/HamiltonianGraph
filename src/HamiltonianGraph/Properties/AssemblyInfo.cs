@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HamiltonianGraph")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Searches a Hamiltonian cycle")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HamiltonianGraph")]

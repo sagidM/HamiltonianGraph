@@ -11,4 +11,25 @@ There are two algorithms presented here:
 * LatinComposition
 * [Branch and bound (BnB)](https://en.wikipedia.org/wiki/Branch_and_bound)
 
-## [...]
+## Usage
+```cs
+string input =
+@"5
+- 24 17 8 -
+1 - 3 - 11
+17 8 - - 6
+8 - 9 - 12
+17 11 6 - -
+";
+
+int?[,] weights = GraphUtil.FromMatrixFormat(input);
+int[] cycle = new BranchAndBound(weights).GetShortestHamiltonianCycle();
+
+
+// output: "0 -> 3 -> 4 -> 2 -> 1 -> 0"
+Console.WriteLine(string.Join(" -> ", cycle));
+
+// or: "A -> D -> E -> C -> B -> A"
+string cycleSymbols = string.Join(" -> ", cycle.Select(vertex => (char)(vertex + 'A')));
+Console.WriteLine(cycleSymbols);
+```

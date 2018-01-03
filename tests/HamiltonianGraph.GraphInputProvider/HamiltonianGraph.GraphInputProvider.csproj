@@ -71,12 +71,6 @@
     <EmbeddedResource Include="inputs\in6_res.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HamiltonianGraph\HamiltonianGraph.csproj">
-      <Project>{9c011e0f-a7e7-47c3-8917-1b547e810e9f}</Project>
-      <Name>HamiltonianGraph</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="inputs\in7.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +81,12 @@
     <EmbeddedResource Include="inputs\in8_res.txt" />
     <EmbeddedResource Include="inputs\in9.txt" />
     <EmbeddedResource Include="inputs\in9_res.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HamiltonianGraph\HamiltonianGraph.csproj">
+      <Project>{f47c6cd7-02c3-4e7c-a028-f4b2af1327f6}</Project>
+      <Name>HamiltonianGraph</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

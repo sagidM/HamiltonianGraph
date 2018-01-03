@@ -1,62 +1,61 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HamiltonianGraph.GraphInputProvider;
+﻿using HamiltonianGraph.GraphInputProvider;
 using MatchingExtensions;
 using HamiltonianGraph.Utils;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class Primary_LatinComposition
     {
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest1()
         {
             GetHamiltonianPathsTest(1);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest2()
         {
             GetHamiltonianPathsTest(2);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest3()
         {
             GetHamiltonianPathsTest(3);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest4()
         {
             GetHamiltonianPathsTest(4);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest5()
         {
             GetHamiltonianPathsTest(5);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest6()
         {
             GetHamiltonianPathsTest(6);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest7()
         {
             GetHamiltonianPathsTest(7);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest8()
         {
             GetHamiltonianPathsTest(8);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetHamiltonianPathsTest9()
         {
             GetHamiltonianPathsTest(9);
@@ -73,8 +72,8 @@ namespace HamiltonianGraph.UnitTests
             var actualDistance = AdjacencyMatrix.PathDistance(actualShortestPath, matrix.Weights);
             var expectedDistance = matrix.ShortestPathDistance;
 
-            Assert.IsTrue(expectedPaths.InnerSequencesEqualInSomeOrder(actualPaths));
-            Assert.AreEqual(expectedDistance, actualDistance);
+            Assert.True(expectedPaths.InnerSequencesEqualInSomeOrder(actualPaths));
+            Assert.Equal(expectedDistance, actualDistance);
         }
     }
 }

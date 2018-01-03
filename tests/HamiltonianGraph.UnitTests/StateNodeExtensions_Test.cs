@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class StateTreeExtensions_Test
     {
-        [TestMethod]
+        [Fact]
         public void AddAndSiftUp()
         {
             var states = new List<StateNode>();
             states.AddAndSiftUp(new StateNode { fine = 3 });
             states.AddAndSiftUp(new StateNode { fine = 12 });
-            Assert.AreEqual(3, states[0].fine);
+            Assert.Equal(3, states[0].fine);
 
             states.AddAndSiftUp(new StateNode { fine = 15 });
             states.AddAndSiftUp(new StateNode { fine = 7 });
             states.AddAndSiftUp(new StateNode { fine = 8 });
-            Assert.AreEqual(3, states[0].fine);
+            Assert.Equal(3, states[0].fine);
 
             states.AddAndSiftUp(new StateNode { fine = 2 });
-            Assert.AreEqual(2, states[0].fine);
+            Assert.Equal(2, states[0].fine);
             states.AddAndSiftUp(new StateNode { fine = 1 });
-            Assert.AreEqual(1, states[0].fine);
+            Assert.Equal(1, states[0].fine);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShiftAndRelax()
         {
             var states = new List<StateNode>();
@@ -40,7 +39,7 @@ namespace HamiltonianGraph.UnitTests
 
             foreach (var fine in fines)
             {
-                Assert.AreEqual(fine, states.ShiftAndRelax().fine);
+                Assert.Equal(fine, states.ShiftAndRelax().fine);
             }
         }
     }

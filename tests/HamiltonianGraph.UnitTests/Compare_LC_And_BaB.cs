@@ -1,92 +1,91 @@
 ﻿using System;
 using System.Text;
 using HamiltonianGraph.GraphInputProvider;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class Compare_LC_And_BaB
     {
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_2_3()
         {
             Compare_BaB_And_LC(n: 2, maxRandomValue: 3, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_2_10()
         {
             Compare_BaB_And_LC(n: 2, maxRandomValue: 10, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_3_5()
         {
             Compare_BaB_And_LC(n: 3, maxRandomValue: 5, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_3_15()
         {
             Compare_BaB_And_LC(n: 3, maxRandomValue: 15, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_4_5()
         {
             Compare_BaB_And_LC(n: 4, maxRandomValue: 5, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_4_50()
         {
             Compare_BaB_And_LC(n: 4, maxRandomValue: 50, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_5_5()
         {
             Compare_BaB_And_LC(n: 5, maxRandomValue: 5, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_5_100()
         {
             Compare_BaB_And_LC(n: 5, maxRandomValue: 100, repeat: 1000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_6_10()
         {
             Compare_BaB_And_LC(n: 6, maxRandomValue: 10, repeat: 100);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_6_100()
         {
             Compare_BaB_And_LC(n: 6, maxRandomValue: 100, repeat: 100);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_7_10()
         {
             Compare_BaB_And_LC(n: 7, maxRandomValue: 10, repeat: 100);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_7_100()
         {
             Compare_BaB_And_LC(n: 7, maxRandomValue: 100, repeat: 200);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_8_10()
         {
             Compare_BaB_And_LC(n: 8, maxRandomValue: 10, repeat: 100);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_And_LC_8_100()
         {
             Compare_BaB_And_LC(n: 8, maxRandomValue: 100, repeat: 100);
@@ -105,29 +104,29 @@ namespace HamiltonianGraph.UnitTests
                 var bbDistance = AdjacencyMatrix.PathDistance(bb, weights);
 
                 var msg = lcDistance == bbDistance ? "" : "\nLC is expected;\nB&B is actual\n" + ToString(weights);
-                Assert.AreEqual(lcDistance, bbDistance, msg);
+                Assert.True(lcDistance == bbDistance, msg);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void CompareWithNull_10_10_05()
         {
             Compare_BaB_And_LC(n: 10, maxRandomValue: 10, repeat: 100, possibilityOfNull: 0.5);
         }
 
-        [TestMethod]
+        [Fact]
         public void CompareWithNull_10_100_04()
         {
             Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 100, possibilityOfNull: 0.4);
         }
 
-        [TestMethod]
+        [Fact]
         public void CompareWithNull_10_100_07()
         {
             Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 10, possibilityOfNull: 0.7);
         }
 
-        [TestMethod]
+        [Fact]
         public void CompareWithNull_10_1000000_08()
         {
             Compare_BaB_And_LC(n: 10, maxRandomValue: 1000000, repeat: 10, possibilityOfNull: 0.8);
@@ -157,7 +156,7 @@ namespace HamiltonianGraph.UnitTests
                 var bbDistance = AdjacencyMatrix.PathDistance(bb, weights);
 
                 var msg = lcDistance == bbDistance ? "" : "\nLC is expected;\nB&B is actual\n" + ToString(weights);
-                Assert.AreEqual(lcDistance, bbDistance, msg);
+                Assert.True(lcDistance == bbDistance, msg);
             }
         }
 

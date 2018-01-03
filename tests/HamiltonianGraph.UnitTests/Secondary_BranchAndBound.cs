@@ -1,15 +1,14 @@
 ﻿using MatchingExtensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class Secondary_BranchAndBound
     {
         private const int Infinity = BranchAndBound.Infinity;
 
-        [TestMethod]
+        [Fact]
         public void ReductionTestSmall()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -30,13 +29,13 @@ namespace HamiltonianGraph.UnitTests
             const int expectedReductionResult = 11;
             int actualReductionResult = BranchAndBound.Reduction(actualWeights);
 
-            Assert.AreEqual(expectedReductionResult, actualReductionResult);
+            Assert.Equal(expectedReductionResult, actualReductionResult);
 
             // test does not care about the main diagonal
             SetMainDiagonal(actualWeights, Infinity);
-            Assert.IsTrue(actualWeights.AreDeepEqual(expectedWeights));
+            Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
-        [TestMethod]
+        [Fact]
         public void ReductionTestBig()
         {
             int[,] actualWeights = GenerateMatrixWithValue(sizeN: 6, value: 0);
@@ -67,11 +66,11 @@ namespace HamiltonianGraph.UnitTests
 
             int actualReductionResult = BranchAndBound.Reduction(actualWeights);
 
-            Assert.AreEqual(expectedReductionResult, actualReductionResult);
-            Assert.IsTrue(actualWeights.AreDeepEqual(expectedWeights));
+            Assert.Equal(expectedReductionResult, actualReductionResult);
+            Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
 
-        [TestMethod]
+        [Fact]
         public void CrossReductionTest()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -87,10 +86,10 @@ namespace HamiltonianGraph.UnitTests
 
             BranchAndBound.SubstractCross(actualWeights, pos: (i, j), mins: (h, v));
 
-            Assert.IsTrue(actualWeights.AreDeepEqual(expectedWeights));
+            Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
 
-        [TestMethod]
+        [Fact]
         public void RemoveCrossFromMatrixTest()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -112,12 +111,12 @@ namespace HamiltonianGraph.UnitTests
             };
             BranchAndBound.UpdateStateNodeWithCrossClippedGraph(state, cutPosition: (i: i, j: j));
 
-            Assert.IsTrue(state.graph.AreDeepEqual(expectedWeights));
-            Assert.IsTrue(state.rowIndices.AreDeepEqual(expectedRowIndices));
-            Assert.IsTrue(state.columnIndices.AreDeepEqual(expectedColumnIndices));
+            Assert.True(state.graph.AreDeepEqual(expectedWeights));
+            Assert.True(state.rowIndices.AreDeepEqual(expectedRowIndices));
+            Assert.True(state.columnIndices.AreDeepEqual(expectedColumnIndices));
         }
 
-        [TestMethod]
+        [Fact]
         public void MinInRawTest()
         {
             int[,] weights = GenerateMatrixWithValue(sizeN: 4, value: Infinity);
@@ -126,10 +125,10 @@ namespace HamiltonianGraph.UnitTests
 
             int actual = BranchAndBound.MinInRow(weights, 0);
             int expected = 5;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void MinInColumnTest()
         {
             int[,] weights = GenerateMatrixWithValue(sizeN: 4, value: Infinity);
@@ -138,10 +137,10 @@ namespace HamiltonianGraph.UnitTests
 
             int actual = BranchAndBound.MinInColumn(weights, 0);
             int expected = 5;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void BaB_Huge()
         {
             for (int i = 43; i <= 43; i++)

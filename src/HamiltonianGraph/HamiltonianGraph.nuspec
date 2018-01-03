@@ -1,14 +1,14 @@
-<?xml version="1.0"?>
-<package >
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
-    <id>HamiltonianGraph_300</id>
+    <id>HamiltonianGraph</id>
     <version>1.1.0</version>
     <title>HamiltonianGraph</title>
     <authors>Sagid Magomedov</authors>
     <owners>Sagid Magomedov</owners>
     <licenseUrl>https://raw.githubusercontent.com/kofon95/HamiltonianGraph/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/kofon95/HamiltonianGraph</projectUrl>
-	<iconUrl>/images/graph_300px.png</iconUrl>
+	<iconUrl>https://cdn.rawgit.com/kofon95/HamiltonianGraph/f5fa7fa9/images/icon-graph_300px.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Searches a Hamiltonian cycle</description>
     <releaseNotes>The 1st release</releaseNotes>

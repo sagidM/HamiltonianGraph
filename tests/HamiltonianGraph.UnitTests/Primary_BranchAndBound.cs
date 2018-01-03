@@ -1,61 +1,60 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HamiltonianGraph.GraphInputProvider;
+﻿using HamiltonianGraph.GraphInputProvider;
 using MatchingExtensions;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class Primary_BranchAndBound
     {
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest1()
         {
             GetShortestHamiltonianPathTest(1);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest2()
         {
             GetShortestHamiltonianPathTest(2);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest3()
         {
             GetShortestHamiltonianPathTest(3);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest4()
         {
             GetShortestHamiltonianPathTest(4);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest5()
         {
             GetShortestHamiltonianPathTest(5);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest6()
         {
             GetShortestHamiltonianPathTest(6);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest7()
         {
             GetShortestHamiltonianPathTest(7);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest8()
         {
             GetShortestHamiltonianPathTest(8);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetShortestHamiltonianPathTest9()
         {
             GetShortestHamiltonianPathTest(9);
@@ -70,7 +69,7 @@ namespace HamiltonianGraph.UnitTests
             var actualDistance = AdjacencyMatrix.PathDistance(path, matrix.Weights);
             var expectedDistance = matrix.ShortestPathDistance;
 
-            Assert.AreEqual(expectedDistance, actualDistance);
+            Assert.Equal(expectedDistance, actualDistance);
         }
     }
 

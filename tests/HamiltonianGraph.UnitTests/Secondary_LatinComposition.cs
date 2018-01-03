@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace HamiltonianGraph.UnitTests
 {
-    [TestClass]
     public class Secondary_LatinComposition
     {
-        [TestMethod]
+        [Fact]
         public void MergePathsTest()
         {
             var actual = LatinComposition.MergePaths(new int[] { 1, 2, 3 }, new int[] { 3, 4, 5 });
             var expected = new int[] { 1, 2, 3, 4, 5 };
 
-            Assert.IsTrue(actual.SequenceEqual(expected));
+            Assert.True(actual.SequenceEqual(expected));
         }
 
-        [TestMethod]
+        [Fact]
         public void SumTest()
         {
             const int n = 8;
@@ -114,7 +113,7 @@ namespace HamiltonianGraph.UnitTests
             a[i, j] = new List<int[]> { new int[] { i, j } };
         }
 
-        [TestMethod]
+        [Fact]
         public void LC_Huge()
         {
 //            string s = 

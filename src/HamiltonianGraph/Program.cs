@@ -3,6 +3,8 @@ using HamiltonianGraph.Utils;
 using System;
 using System.Linq;
 
+[assembly:System.Runtime.CompilerServices.InternalsVisibleTo("HamiltonianGraph.UnitTests")]
+
 namespace HamiltonianGraph
 {
     // https://habrahabr.ru/post/246437/

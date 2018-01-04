@@ -1,92 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B8DC90B8-23C9-4F8E-9F78-6C8CC2AA7508}</ProjectGuid>
+    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <ApplicationIcon />
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HamiltonianGraph.GraphInputProvider</RootNamespace>
-    <AssemblyName>HamiltonianGraph.GraphInputProvider</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <None Remove="inputs\in1.txt" />
+    <None Remove="inputs\in1_res.txt" />
+    <None Remove="inputs\in2.txt" />
+    <None Remove="inputs\in2_res.txt" />
+    <None Remove="inputs\in3.txt" />
+    <None Remove="inputs\in3_res.txt" />
+    <None Remove="inputs\in4.txt" />
+    <None Remove="inputs\in4_res.txt" />
+    <None Remove="inputs\in5.txt" />
+    <None Remove="inputs\in5_res.txt" />
+    <None Remove="inputs\in6.txt" />
+    <None Remove="inputs\in6_res.txt" />
+    <None Remove="inputs\in7.txt" />
+    <None Remove="inputs\in7_res.txt" />
+    <None Remove="inputs\in8.txt" />
+    <None Remove="inputs\in8_res.txt" />
+    <None Remove="inputs\in9.txt" />
+    <None Remove="inputs\in9_res.txt" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AdjacencyMatrix.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="inputs\in2_res.txt" />
-    <EmbeddedResource Include="inputs\in3_res.txt" />
-    <EmbeddedResource Include="inputs\in4_res.txt" />
-    <EmbeddedResource Include="inputs\in1_res.txt" />
     <EmbeddedResource Include="inputs\in1.txt" />
+    <EmbeddedResource Include="inputs\in1_res.txt" />
     <EmbeddedResource Include="inputs\in2.txt" />
+    <EmbeddedResource Include="inputs\in2_res.txt" />
     <EmbeddedResource Include="inputs\in3.txt" />
+    <EmbeddedResource Include="inputs\in3_res.txt" />
     <EmbeddedResource Include="inputs\in4.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="inputs\README_in.md" />
-    <None Include="inputs\README_in_res.md" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="inputs\in4_res.txt" />
     <EmbeddedResource Include="inputs\in5.txt" />
     <EmbeddedResource Include="inputs\in5_res.txt" />
     <EmbeddedResource Include="inputs\in6.txt" />
     <EmbeddedResource Include="inputs\in6_res.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="inputs\in7.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="inputs\in7_res.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="inputs\in8.txt" />
     <EmbeddedResource Include="inputs\in8_res.txt" />
     <EmbeddedResource Include="inputs\in9.txt" />
     <EmbeddedResource Include="inputs\in9_res.txt" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HamiltonianGraph\HamiltonianGraph.csproj">
-      <Project>{f47c6cd7-02c3-4e7c-a028-f4b2af1327f6}</Project>
-      <Name>HamiltonianGraph</Name>
-    </ProjectReference>
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\MatchingExtensions\MatchingExtensions.csproj" />
+    <ProjectReference Include="..\..\src\HamiltonianGraph\HamiltonianGraph.csproj" />
+  </ItemGroup>
+
 </Project>

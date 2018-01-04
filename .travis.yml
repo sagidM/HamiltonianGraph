@@ -16,6 +16,10 @@ script:
   - dotnet test tests/HamiltonianGraph.UnitTests --configuration Release --framework netcoreapp2.0
 
   # xunit: net452 tests net452
+  # Debug
+  - msbuild tests/HamiltonianGraph.UnitTests /p:Configuration=Debug /p:TargetFramework=net452
+  - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/bin/Debug/net452/HamiltonianGraph.UnitTests.dll
+  # Release
   - msbuild tests/HamiltonianGraph.UnitTests /p:Configuration=Release /p:TargetFramework=net452
   - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/bin/Release/net452/HamiltonianGraph.UnitTests.dll
 

@@ -2,6 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/HamiltonianGraph.svg)](https://www.nuget.org/packages/HamiltonianGraph)
 [![Build Status](https://travis-ci.org/kofon95/HamiltonianGraph.svg?branch=master)](https://travis-ci.org/kofon95/HamiltonianGraph)
+[![Build status](https://ci.appveyor.com/api/projects/status/ext3mth0kpc4dba8?svg=true)](https://ci.appveyor.com/project/kofon95/hamiltoniangraph)
 
 ## What is that?
 A Hamiltonian graph, also called a Hamilton graph, is a graph possessing a Hamiltonian cycle (or circuit).

@@ -10,9 +10,12 @@ install:
 script:
   - dotnet test tests/HamiltonianGraph.UnitTests --configuration Release --framework netcoreapp2.0
   
+  # xunit: net452 tests net452
   - msbuild tests/HamiltonianGraph.UnitTests /p:Configuration=Release /p:TargetFramework=net452
-  - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/Release/net452/HamiltonianGraph.UnitTests.dll
+  - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/bin/Release/net452/HamiltonianGraph.UnitTests.dll
 
+  # xunit: net452 tests net40
+#  - dotnet restore src/HamiltonianGraph /p:configuration=Release
   - msbuild src/HamiltonianGraph /p:targetFramework=net40 /p:configuration=Release
-  - dotnet restore src/HamiltonianGraph /p:configuration=Release
-  - msbuild src/HamiltonianGraph /p:targetFramework=net40 /p:configuration=Release
+  - cp src/HamiltonianGraph/bin/Release/net40/HamiltonianGraph.dll tests/HamiltonianGraph.UnitTests/bin/Release/net452
+  - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/bin/Release/net452/HamiltonianGraph.UnitTests.dll

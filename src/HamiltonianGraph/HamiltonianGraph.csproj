@@ -1,7 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net40;net452;netstandard1.3;netstandard1.6;netstandard2.0;</TargetFrameworks>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <TargetFrameworks>net452</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'"><TargetFrameworks>net40;net452;netstandard1.3;netstandard1.6;netstandard2.0;</TargetFrameworks>
+    <Authors>Sagid Magomedov</Authors>
+    <Company>Sagid Magomedov</Company>
+    <Description>Searches a Hamiltonian cycle</Description>
+    <Copyright>Copyright 2018</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/kofon95/HamiltonianGraph/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kofon95/HamiltonianGraph</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.rawgit.com/kofon95/HamiltonianGraph/f5fa7fa9/images/icon-graph_300px.png</PackageIconUrl>
+    <RepositoryUrl>git@github.com:kofon95/HamiltonianGraph.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Hamiltonian Hamilton cycle shortest path graph travelling traveling salesman problem TSP</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.1</AssemblyVersion>
+    <FileVersion>1.1.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

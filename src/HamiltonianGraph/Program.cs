@@ -1,18 +1,19 @@
-﻿#if DEBUG
+﻿///////////////////////////////////////
+//  This file is only for DEBUGGING  //
+///////////////////////////////////////
+
 using HamiltonianGraph.Utils;
 using System;
 using System.Linq;
 
 [assembly:System.Runtime.CompilerServices.InternalsVisibleTo("HamiltonianGraph.UnitTests")]
 
+#if DEBUG
+
 namespace HamiltonianGraph
 {
-    // https://habrahabr.ru/post/246437/
     internal class Program
     {
-        ///////////////////////////////////////
-        //  This file is only for DEBUGGING  //
-        ///////////////////////////////////////
         static void Main(string[] args)
         {
             // Example

@@ -5,13 +5,18 @@ VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{AE80D5C5-788A-4FC1-A90C-9F553E99C99C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HamiltonianGraph.GraphInputProvider", "tests\HamiltonianGraph.GraphInputProvider\HamiltonianGraph.GraphInputProvider.csproj", "{B8DC90B8-23C9-4F8E-9F78-6C8CC2AA7508}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamiltonianGraph.GraphInputProvider", "tests\HamiltonianGraph.GraphInputProvider\HamiltonianGraph.GraphInputProvider.csproj", "{B8DC90B8-23C9-4F8E-9F78-6C8CC2AA7508}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchingExtensions", "tests\MatchingExtensions\MatchingExtensions.csproj", "{639063AC-A833-40D7-82B9-FFB5420B48C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchingExtensions", "tests\MatchingExtensions\MatchingExtensions.csproj", "{639063AC-A833-40D7-82B9-FFB5420B48C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamiltonianGraph", "src\HamiltonianGraph\HamiltonianGraph.csproj", "{F47C6CD7-02C3-4E7C-A028-F4B2AF1327F6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamiltonianGraph.UnitTests", "tests\HamiltonianGraph.UnitTests\HamiltonianGraph.UnitTests.csproj", "{0612C72A-FB94-411D-8F6B-D6F515E5C617}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0AA98ADA-B252-486A-BF82-6C1A71A4A15B}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

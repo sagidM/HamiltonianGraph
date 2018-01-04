@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(Configuration)'=='Debug'">net452;</TargetFrameworks>
+    <TargetFrameworks Condition="'$(Configuration)'=='Release'">net452;netcoreapp2.0;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

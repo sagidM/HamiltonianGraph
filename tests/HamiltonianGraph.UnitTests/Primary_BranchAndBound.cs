@@ -20,7 +20,7 @@ namespace HamiltonianGraph.UnitTests
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
             var path = new BranchAndBound(matrix.Weights).GetShortestHamiltonianCycle();
-            path.AreUnique(1, path.Length-1);
+            Assert.True(path.AreUnique(1, path.Length-1), string.Join(", ", path));
 
             var actualDistance = AdjacencyMatrix.PathDistance(path, matrix.Weights);
             var expectedDistance = matrix.ShortestPathDistance;

@@ -117,7 +117,7 @@ namespace MatchingExtensions
                 if (buff.ContainsKey(item)) return false;
                 buff.Add(item, item);
             }
-            return false;
+            return true;
         }
     }
 }

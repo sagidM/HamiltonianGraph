@@ -235,22 +235,6 @@ namespace HamiltonianGraph
             return sumOfMins;
         }
 
-        private static void Print(int?[,] g)
-        {
-            Console.WriteLine("Matrix:");
-            for (int i = 0; i < g.GetLength(0); i++)
-            {
-                Console.Write("[");
-                for (int j = 0; j < g.GetLength(1); j++)
-                {
-                    var s = g[i, j] == null ? "-" : g[i, j] > Infinity / 2 ? "INF" : g[i, j] + "";
-                    Console.Write(s + (j + 1 < g.GetLength(1) ? ", " : ""));
-                }
-                Console.WriteLine("]");
-            }
-            Console.WriteLine();
-        }
-
         /// <summary>
         /// Removse min.horizontal from pos.i line and
         /// removes min.vertical from pos.j column
@@ -321,7 +305,28 @@ namespace HamiltonianGraph
             Array.Copy(array, exceptIndex+1, result, exceptIndex, result.Length - exceptIndex);
             return result;
         }
-        private static T Copy<T>(T matrix) where T : ICloneable => (T)matrix.Clone();
+
+        private static int[] Copy(int[] matrix) => (int[])matrix.Clone();
+        private static int[,] Copy(int[,] matrix) => (int[,])matrix.Clone();
+
+
+#if DEBUG
+        private static void Print(int?[,] g)
+        {
+            Console.WriteLine("Matrix:");
+            for (int i = 0; i < g.GetLength(0); i++)
+            {
+                Console.Write("[");
+                for (int j = 0; j < g.GetLength(1); j++)
+                {
+                    var s = g[i, j] == null ? "-" : g[i, j] > Infinity / 2 ? "INF" : g[i, j] + "";
+                    Console.Write(s + (j + 1 < g.GetLength(1) ? ", " : ""));
+                }
+                Console.WriteLine("]");
+            }
+            Console.WriteLine();
+        }
+#endif
     }
 
     internal sealed class StateNode : IComparable<StateNode>

@@ -6,7 +6,7 @@ namespace HamiltonianGraph.UnitTests
 {
     public class StateTreeExtensions_Test
     {
-        [Fact]
+        [Fact(DisplayName = "[StateNode] Add")]
         public void AddAndSiftUp()
         {
             var states = new List<StateNode>();
@@ -25,7 +25,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.Equal(1, states[0].fine);
         }
 
-        [Fact]
+        [Fact(DisplayName = "[StateNode] Relax")]
         public void ShiftAndRelax()
         {
             var states = new List<StateNode>();

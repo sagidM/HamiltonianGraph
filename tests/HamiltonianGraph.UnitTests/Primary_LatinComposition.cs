@@ -7,61 +7,17 @@ namespace HamiltonianGraph.UnitTests
 {
     public class Primary_LatinComposition
     {
-        [Fact]
-        public void GetHamiltonianPathsTest1()
-        {
-            GetHamiltonianPathsTest(1);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest2()
-        {
-            GetHamiltonianPathsTest(2);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest3()
-        {
-            GetHamiltonianPathsTest(3);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest4()
-        {
-            GetHamiltonianPathsTest(4);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest5()
-        {
-            GetHamiltonianPathsTest(5);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest6()
-        {
-            GetHamiltonianPathsTest(6);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest7()
-        {
-            GetHamiltonianPathsTest(7);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest8()
-        {
-            GetHamiltonianPathsTest(8);
-        }
-
-        [Fact]
-        public void GetHamiltonianPathsTest9()
-        {
-            GetHamiltonianPathsTest(9);
-        }
-
-        private void GetHamiltonianPathsTest(int testNumber)
+        [Theory(DisplayName = "[LC] Shortest cycles")]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        [InlineData(7)]
+        [InlineData(8)]
+        [InlineData(9)]
+        public void GetHamiltonianCyclesTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
             var actualPaths = new LatinComposition(matrix.Weights).GetAllHamiltorianCycles();

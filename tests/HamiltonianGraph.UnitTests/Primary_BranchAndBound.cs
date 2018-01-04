@@ -6,61 +6,17 @@ namespace HamiltonianGraph.UnitTests
 {
     public class Primary_BranchAndBound
     {
-        [Fact]
-        public void GetShortestHamiltonianPathTest1()
-        {
-            GetShortestHamiltonianPathTest(1);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest2()
-        {
-            GetShortestHamiltonianPathTest(2);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest3()
-        {
-            GetShortestHamiltonianPathTest(3);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest4()
-        {
-            GetShortestHamiltonianPathTest(4);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest5()
-        {
-            GetShortestHamiltonianPathTest(5);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest6()
-        {
-            GetShortestHamiltonianPathTest(6);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest7()
-        {
-            GetShortestHamiltonianPathTest(7);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest8()
-        {
-            GetShortestHamiltonianPathTest(8);
-        }
-
-        [Fact]
-        public void GetShortestHamiltonianPathTest9()
-        {
-            GetShortestHamiltonianPathTest(9);
-        }
-
-        private static void GetShortestHamiltonianPathTest(int testNumber)
+        [Theory(DisplayName = "[BaB] Shortest cycle")]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        [InlineData(7)]
+        [InlineData(8)]
+        [InlineData(9)]
+        public static void GetShortestHamiltonianCycleTest(int testNumber)
         {
             var matrix = AdjacencyMatrix.GetGraph(testNumber);
             var path = new BranchAndBound(matrix.Weights).GetShortestHamiltonianCycle();

@@ -8,7 +8,7 @@ namespace HamiltonianGraph.UnitTests
     {
         private const int Infinity = BranchAndBound.Infinity;
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] Reduction (small)")]
         public void ReductionTestSmall()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -35,7 +35,7 @@ namespace HamiltonianGraph.UnitTests
             SetMainDiagonal(actualWeights, Infinity);
             Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
-        [Fact]
+        [Fact(DisplayName = "[BaB] Reduction (big)")]
         public void ReductionTestBig()
         {
             int[,] actualWeights = GenerateMatrixWithValue(sizeN: 6, value: 0);
@@ -70,7 +70,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] CrossReduction")]
         public void CrossReductionTest()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -89,7 +89,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.True(actualWeights.AreDeepEqual(expectedWeights));
         }
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] Cross")]
         public void RemoveCrossFromMatrixTest()
         {
             int[,] actualWeights = GenerateSampleWeights();
@@ -116,7 +116,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.True(state.columnIndices.AreDeepEqual(expectedColumnIndices));
         }
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] Min in raw")]
         public void MinInRawTest()
         {
             int[,] weights = GenerateMatrixWithValue(sizeN: 4, value: Infinity);
@@ -128,7 +128,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] Min in column")]
         public void MinInColumnTest()
         {
             int[,] weights = GenerateMatrixWithValue(sizeN: 4, value: Infinity);
@@ -140,7 +140,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
+        [Fact(DisplayName = "[BaB] Huge test")]
         public void BaB_Huge()
         {
             for (int i = 43; i <= 43; i++)

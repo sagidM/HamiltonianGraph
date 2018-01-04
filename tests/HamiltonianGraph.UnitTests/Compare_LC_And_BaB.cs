@@ -7,92 +7,22 @@ namespace HamiltonianGraph.UnitTests
 {
     public class Compare_LC_And_BaB
     {
-        [Fact]
-        public void BaB_And_LC_2_3()
-        {
-            Compare_BaB_And_LC(n: 2, maxRandomValue: 3, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_2_10()
-        {
-            Compare_BaB_And_LC(n: 2, maxRandomValue: 10, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_3_5()
-        {
-            Compare_BaB_And_LC(n: 3, maxRandomValue: 5, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_3_15()
-        {
-            Compare_BaB_And_LC(n: 3, maxRandomValue: 15, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_4_5()
-        {
-            Compare_BaB_And_LC(n: 4, maxRandomValue: 5, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_4_50()
-        {
-            Compare_BaB_And_LC(n: 4, maxRandomValue: 50, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_5_5()
-        {
-            Compare_BaB_And_LC(n: 5, maxRandomValue: 5, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_5_100()
-        {
-            Compare_BaB_And_LC(n: 5, maxRandomValue: 100, repeat: 1000);
-        }
-
-        [Fact]
-        public void BaB_And_LC_6_10()
-        {
-            Compare_BaB_And_LC(n: 6, maxRandomValue: 10, repeat: 100);
-        }
-
-        [Fact]
-        public void BaB_And_LC_6_100()
-        {
-            Compare_BaB_And_LC(n: 6, maxRandomValue: 100, repeat: 100);
-        }
-
-        [Fact]
-        public void BaB_And_LC_7_10()
-        {
-            Compare_BaB_And_LC(n: 7, maxRandomValue: 10, repeat: 100);
-        }
-
-        [Fact]
-        public void BaB_And_LC_7_100()
-        {
-            Compare_BaB_And_LC(n: 7, maxRandomValue: 100, repeat: 200);
-        }
-
-        [Fact]
-        public void BaB_And_LC_8_10()
-        {
-            Compare_BaB_And_LC(n: 8, maxRandomValue: 10, repeat: 100);
-        }
-
-        [Fact]
-        public void BaB_And_LC_8_100()
-        {
-            Compare_BaB_And_LC(n: 8, maxRandomValue: 100, repeat: 100);
-        }
-
-
-        private static void Compare_BaB_And_LC(int n, int maxRandomValue, int repeat)
+        [Theory(DisplayName = "BaB vs LC")]
+        [InlineData(2, 3, 1000)]
+        [InlineData(2, 10, 1000)]
+        [InlineData(3, 5, 1000)]
+        [InlineData(3, 15, 1000)]
+        [InlineData(4, 5, 1000)]
+        [InlineData(4, 50, 1000)]
+        [InlineData(5, 5, 1000)]
+        [InlineData(5, 100, 1000)]
+        [InlineData(6, 10, 100)]
+        [InlineData(6, 100, 100)]
+        [InlineData(7, 10, 100)]
+        [InlineData(7, 100, 200)]
+        [InlineData(8, 10, 100)]
+        [InlineData(8, 100, 100)]
+        public void Compare_BaB_And_LC1(int n, int maxRandomValue, int repeat)
         {
             for (int i = 0; i < repeat; i++)
             {
@@ -103,36 +33,17 @@ namespace HamiltonianGraph.UnitTests
                 var lcDistance = AdjacencyMatrix.PathDistance(lc, weights);
                 var bbDistance = AdjacencyMatrix.PathDistance(bb, weights);
 
-                var msg = lcDistance == bbDistance ? "" : "\nLC is expected;\nB&B is actual\n" + ToString(weights);
+                var msg = lcDistance == bbDistance ? "" : $"\nLC distance: {lcDistance};\nB&B distance: {bbDistance}\n" + ToString(weights);
                 Assert.True(lcDistance == bbDistance, msg);
             }
         }
 
-        [Fact]
-        public void CompareWithNull_10_10_05()
-        {
-            Compare_BaB_And_LC(n: 10, maxRandomValue: 10, repeat: 100, possibilityOfNull: 0.5);
-        }
-
-        [Fact]
-        public void CompareWithNull_10_100_04()
-        {
-            Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 100, possibilityOfNull: 0.4);
-        }
-
-        [Fact]
-        public void CompareWithNull_10_100_07()
-        {
-            Compare_BaB_And_LC(n: 10, maxRandomValue: 100, repeat: 10, possibilityOfNull: 0.7);
-        }
-
-        [Fact]
-        public void CompareWithNull_10_1000000_08()
-        {
-            Compare_BaB_And_LC(n: 10, maxRandomValue: 1000000, repeat: 10, possibilityOfNull: 0.8);
-        }
-
-        private static void Compare_BaB_And_LC(int n, int maxRandomValue, int repeat, double possibilityOfNull)
+        [Theory(DisplayName = "BaB vs LC [nullable]")]
+        [InlineData(10, 10, 100, 0.5)]
+        [InlineData(10, 100, 100, 0.4)]
+        [InlineData(10, 100, 10, 0.7)]
+        [InlineData(10, 1000000, 10, 0.8)]
+        public void Compare_BaB_And_LC(int n, int maxRandomValue, int repeat, double possibilityOfNull)
         {
             for (int i = 0; i < repeat; i++)
             {
@@ -155,7 +66,7 @@ namespace HamiltonianGraph.UnitTests
                 var lcDistance = AdjacencyMatrix.PathDistance(lc, weights);
                 var bbDistance = AdjacencyMatrix.PathDistance(bb, weights);
 
-                var msg = lcDistance == bbDistance ? "" : "\nLC is expected;\nB&B is actual\n" + ToString(weights);
+                var msg = lcDistance == bbDistance ? "" : $"\nLC distance: {lcDistance};\nB&B distance: {bbDistance}\n" + ToString(weights);
                 Assert.True(lcDistance == bbDistance, msg);
             }
         }
@@ -167,8 +78,8 @@ namespace HamiltonianGraph.UnitTests
             {
                 for (int j = 0; j < n; j++)
                 {
-                    if (i == j || Random.NextDouble() > possibilityOfNull) continue;
-                    weights[i, j] = Random.Next(n);
+                    if (i != j && Random.NextDouble() <= possibilityOfNull)
+                        weights[i, j] = Random.Next(n);
                 }
             }
             return weights;
@@ -180,8 +91,8 @@ namespace HamiltonianGraph.UnitTests
             {
                 for (int j = 0; j < n; j++)
                 {
-                    if (i == j) continue;
-                    weights[i, j] = Random.Next(n);
+                    if (i != j)
+                        weights[i, j] = Random.Next(n);
                 }
             }
             return weights;

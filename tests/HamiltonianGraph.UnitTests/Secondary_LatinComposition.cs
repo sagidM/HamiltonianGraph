@@ -6,7 +6,7 @@ namespace HamiltonianGraph.UnitTests
 {
     public class Secondary_LatinComposition
     {
-        [Fact]
+        [Fact(DisplayName = "[LC] Merge")]
         public void MergePathsTest()
         {
             var actual = LatinComposition.MergePaths(new int[] { 1, 2, 3 }, new int[] { 3, 4, 5 });
@@ -15,7 +15,7 @@ namespace HamiltonianGraph.UnitTests
             Assert.True(actual.SequenceEqual(expected));
         }
 
-        [Fact]
+        [Fact(DisplayName = "[LC] Sum")]
         public void SumTest()
         {
             const int n = 8;
@@ -113,7 +113,7 @@ namespace HamiltonianGraph.UnitTests
             a[i, j] = new List<int[]> { new int[] { i, j } };
         }
 
-        [Fact]
+        [Fact(DisplayName = "[LC] Huge test")]
         public void LC_Huge()
         {
 //            string s = 

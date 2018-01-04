@@ -1,6 +1,6 @@
 # Hamiltonian Graph
 
-![Nuget](https://img.shields.io/nuget/v/hamiltoniangraph.svg)
+[![NuGet](https://img.shields.io/nuget/v/HamiltonianGraph.svg)](https://www.nuget.org/packages/HamiltonianGraph)
 [![Build Status](https://travis-ci.org/kofon95/HamiltonianGraph.svg?branch=master)](https://travis-ci.org/kofon95/HamiltonianGraph)
 
 ## What is that?

@@ -8,8 +8,13 @@ install:
   - nuget install xunit.runner.console -Version 2.3.1 -OutputDirectory testrunner
 
 script:
+  # no tests
+  - dotnet build src/HamiltonianGraph --configuration Release --framework netstandard1.3
+  - dotnet build src/HamiltonianGraph --configuration Release --framework netstandard1.6
+
+  # xunit: netcoreapp2.0 tests netstandard2.0 (implicit building)
   - dotnet test tests/HamiltonianGraph.UnitTests --configuration Release --framework netcoreapp2.0
-  
+
   # xunit: net452 tests net452
   - msbuild tests/HamiltonianGraph.UnitTests /p:Configuration=Release /p:TargetFramework=net452
   - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/bin/Release/net452/HamiltonianGraph.UnitTests.dll

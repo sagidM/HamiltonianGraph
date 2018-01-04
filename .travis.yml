@@ -1,0 +1,18 @@
+language: csharp
+
+mono: 5.0.0
+dotnet: 2.0.0
+
+install:
+  - dotnet restore
+  - nuget install xunit.runner.console -Version 2.3.1 -OutputDirectory testrunner
+
+script:
+  - dotnet test tests/HamiltonianGraph.UnitTests --configuration Release --framework netcoreapp2.0
+  
+  - msbuild tests/HamiltonianGraph.UnitTests /p:Configuration=Release /p:TargetFramework=net452
+  - mono testrunner/xunit.runner.console.2.3.1/tools/net452/xunit.console.exe tests/HamiltonianGraph.UnitTests/Release/net452/HamiltonianGraph.UnitTests.dll
+
+  - msbuild src/HamiltonianGraph /p:targetFramework=net40 /p:configuration=Release
+  - dotnet restore src/HamiltonianGraph /p:configuration=Release
+  - msbuild src/HamiltonianGraph /p:targetFramework=net40 /p:configuration=Release

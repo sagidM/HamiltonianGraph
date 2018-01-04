@@ -8,13 +8,14 @@
     <Authors>Sagid Magomedov</Authors>
     <Company>Sagid Magomedov</Company>
     <Description>Searches a Hamiltonian cycle</Description>
-    <Copyright>Copyright 2018</Copyright>
+    <Copyright>Copyright 2017-2018</Copyright>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kofon95/HamiltonianGraph/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/kofon95/HamiltonianGraph</PackageProjectUrl>
     <PackageIconUrl>https://cdn.rawgit.com/kofon95/HamiltonianGraph/f5fa7fa9/images/icon-graph_300px.png</PackageIconUrl>
     <RepositoryUrl>git@github.com:kofon95/HamiltonianGraph.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Hamiltonian Hamilton cycle shortest path graph travelling traveling salesman problem TSP</PackageTags>
+    <PackageReleaseNotes>Support frameworks: net40, net452, netstandard1.3, netstandard1.6, netstandard2.0</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.1.0</Version>

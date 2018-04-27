@@ -100,6 +100,20 @@ namespace HamiltonianGraph.UnitTests
             }
         }
 
+        [Fact(DisplayName = "[LC] Single Vertex")]
+        public void LC_1x1()
+        {
+            var cycle = new LatinComposition(new int?[1, 1]).GetShortestHamiltonianCycle();
+            Assert.Single(cycle, 0);
+        }
+
+        [Fact(DisplayName = "[LC] Empty Graph")]
+        public void LC_0x0()
+        {
+            var actual = new LatinComposition(new int?[0, 0]).GetShortestHamiltonianCycle();
+            Assert.Empty(actual);
+        }
+
         private static void GeneratePaths(List<int[]>[,] a, params int[] v)
         {
             if (a[v[0], v[v.Length - 1]] == null)

@@ -150,6 +150,20 @@ namespace HamiltonianGraph.UnitTests
             }
         }
 
+        [Fact(DisplayName ="[BaB] Single Vertex")]
+        public void BaB_1x1()
+        {
+            var cycle = new BranchAndBound(new int?[1, 1]).GetShortestHamiltonianCycle();
+            Assert.Single(cycle, 0);
+        }
+
+        [Fact(DisplayName ="[BaB] Empty Graph")]
+        public void BaB_0x0()
+        {
+            var actual = new BranchAndBound(new int?[0, 0]).GetShortestHamiltonianCycle();
+            Assert.Empty(actual);
+        }
+
 
         /**
          * |- 2 3|

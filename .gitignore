@@ -262,3 +262,4 @@ __pycache__/
 
 nuget.exe
 testrunner/
+.sonarqube/

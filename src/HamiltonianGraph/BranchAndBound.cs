@@ -24,11 +24,16 @@ namespace HamiltonianGraph
         public int[] GetShortestHamiltonianCycle()
         {
             int n = this.n;
-            if (n <= 1)
-                return null;
-            else if (n == 2)
-                return graph[0, 1] < Infinity && graph[1, 0] < Infinity
-                         ? new[] { 0, 1, 0 } : null;
+            switch (n)
+            {
+                case 0:
+                    return new int[0];
+                case 1:
+                    return new int[] { 0 };
+                case 2:
+                    return graph[0, 1] < Infinity && graph[1, 0] < Infinity
+                             ? new[] { 0, 1, 0 } : null;
+            }
 
             var sw = new System.Diagnostics.Stopwatch();
             StateNode cachedCheapestState = new StateNode

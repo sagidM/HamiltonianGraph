@@ -22,6 +22,15 @@ namespace HamiltonianGraph
 
         public IList<int[]> GetAllHamiltorianCycles()
         {
+            int n = this.n;
+            switch (n)
+            {
+                case 0:
+                    return new int[1][] { new int[0] };
+                case 1:
+                    return new int[1][] { new int[] { 0 } };
+            }
+
             var one = new List<int[]>[n, n];
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)

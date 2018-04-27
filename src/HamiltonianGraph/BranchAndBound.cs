@@ -35,7 +35,7 @@ namespace HamiltonianGraph
                              ? new[] { 0, 1, 0 } : null;
             }
 
-            var sw = new System.Diagnostics.Stopwatch();
+            //var sw = new System.Diagnostics.Stopwatch();
             StateNode cachedCheapestState = new StateNode
             {
                 graph = graph, edge = (-1, -1),
@@ -55,9 +55,9 @@ namespace HamiltonianGraph
 
             while (true)
             {
-                sw.Start();
+                //sw.Start();
                 state = cachedCheapestState ?? statesHeap.ShiftAndRelax();
-                sw.Stop();
+                //sw.Stop();
                 if (state.fine >= Infinity) return null;
                 // "g" is just a simple name for cheapestState.graph
                 var g = Copy(state.graph); // 0.02
@@ -146,7 +146,7 @@ namespace HamiltonianGraph
                     cachedCheapestState = null;
                 }
             }
-            System.Diagnostics.Debug.WriteLine(sw.Elapsed);
+            //System.Diagnostics.Debug.WriteLine(sw.Elapsed);
 
             n = this.n;
 

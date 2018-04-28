@@ -1,0 +1,76 @@
+﻿<Window x:Class="HamiltonianGraph.Benchmark.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HamiltonianGraph.Benchmark"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+	<Grid ShowGridLines="True">
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition/>
+			<RowDefinition/>
+			<RowDefinition/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+
+		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="0">
+			<Label Content="Количество вершин"/>
+			<StackPanel>
+				<Label Content="Minimum"/>
+				<DockPanel LastChildFill="True">
+					<TextBox Margin="10 0 0 0" DockPanel.Dock="Right" Width="50" Text="{Binding VertexMinimum, UpdateSourceTrigger=PropertyChanged}"/>
+					<Slider DockPanel.Dock="Left" Value="{Binding VertexMinimum}" Minimum="1" Maximum="30"/>
+				</DockPanel>
+			</StackPanel>
+			<StackPanel>
+				<Label Content="Maximum"/>
+				<DockPanel LastChildFill="True">
+					<TextBox Margin="10 0 0 0" DockPanel.Dock="Right" Width="50" Text="{Binding VertexMaximum, UpdateSourceTrigger=PropertyChanged}"/>
+					<Slider DockPanel.Dock="Left" Value="{Binding VertexMaximum}" Minimum="1" Maximum="30"/>
+				</DockPanel>
+			</StackPanel>
+		</StackPanel>
+
+
+		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="1">
+			<Label Content="Диапазон весов"/>
+			<StackPanel>
+				<Label Content="Minimum"/>
+				<DockPanel LastChildFill="True">
+					<TextBox Margin="10 0 0 0" DockPanel.Dock="Right" Width="50" Text="{Binding WeightMinimum, UpdateSourceTrigger=PropertyChanged}"/>
+					<Slider DockPanel.Dock="Left" Value="{Binding WeightMinimum}" Minimum="1" Maximum="1000"/>
+				</DockPanel>
+				<Slider Minimum="1" Maximum="10">
+					<Slider.Template>
+						<ControlTemplate></ControlTemplate>
+					</Slider.Template>
+				</Slider>
+			</StackPanel>
+			<StackPanel>
+				<Label Content="Maximum"/>
+				<DockPanel LastChildFill="True">
+					<TextBox Margin="10 0 0 0" DockPanel.Dock="Right" Width="50" Text="{Binding WeightMaximum, UpdateSourceTrigger=PropertyChanged}"/>
+					<Slider DockPanel.Dock="Left" Value="{Binding WeightMaximum}" Minimum="1" Maximum="1000"/>
+				</DockPanel>
+			</StackPanel>
+		</StackPanel>
+
+		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="2">
+			<Label Content="Плотность графа"/>
+			<Slider Value="{Binding Density}" Minimum="0" Maximum="1" SmallChange="0.1" LargeChange="0.2"/>
+			<TextBox Text="{Binding Density, UpdateSourceTrigger=PropertyChanged}"/>
+		</StackPanel>
+
+		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="3">
+			<Label Content="Количество графов"/>
+			<Slider Value="{Binding GraphCount}" Minimum="1" Maximum="1000" SmallChange="1" LargeChange="10"/>
+			<TextBox Text="{Binding GraphCount, UpdateSourceTrigger=PropertyChanged}"/>
+		</StackPanel>
+
+		<StackPanel Grid.Row="5" VerticalAlignment="Center">
+			<Button Margin="10" Width="250" Height="40" Content="Сгенерировать графы" Click="GenerateGraphs"/>
+		</StackPanel>
+	</Grid>
+</Window>

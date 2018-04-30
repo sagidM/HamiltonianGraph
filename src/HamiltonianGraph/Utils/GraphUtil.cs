@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace HamiltonianGraph.Utils
 {
@@ -32,6 +33,29 @@ namespace HamiltonianGraph.Utils
                         weights[i, j] = int.Parse(numbers[j]);
             }
             return weights;
+        }
+
+        public static string ToMatrixFormat(int?[,] weights)
+        {
+            var n = weights.GetLength(0);
+            var sb = new StringBuilder(n * n << 1);
+            sb.AppendLine(n + "");
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (i == j || !weights[i, j].HasValue)
+                        sb.Append('-');
+                    else
+                        sb.Append(weights[i, j].Value);
+
+                    if (j == n - 1)
+                        sb.AppendLine();
+                    else
+                        sb.Append(' ');
+                }
+            }
+            return sb.ToString();
         }
 
 

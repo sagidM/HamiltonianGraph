@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,14 +25,23 @@ namespace HamiltonianGraph.Benchmark
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private const string SeedPath = "seed.txt";
+        Random rand;
+        int?[][,] _bunchOfWeights;
+
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
+            if (File.Exists(SeedPath) && int.TryParse(File.ReadAllText(SeedPath), out var seed))
+            {
+                rand = new Random(seed);
+            }
+            else
+            {
+                rand = new Random();
+            }
         }
-
-
-        static Random rand = new Random(42);
 
 
         #region Ranges
@@ -110,6 +122,13 @@ namespace HamiltonianGraph.Benchmark
 
         #endregion
 
+        private string _adjacencyMatrixText;
+        public string AdjacencyMatrixText
+        {
+            get => _adjacencyMatrixText;
+            set => SetField(ref _adjacencyMatrixText, value);
+        }
+
         private int?[,] GetRandomWeights()
         {
             int n = rand.Next(VertexMinimum, VertexMaximum + 1);
@@ -128,12 +147,119 @@ namespace HamiltonianGraph.Benchmark
         private void GenerateGraphs(object sender, RoutedEventArgs e)
         {
             var bunchOfWeights = new int?[_graphCount][,];
-            for (int i = 0; i < bunchOfWeights.Length; i++)
+            var sb = new StringBuilder(_graphCount * 100);
+            int lastIndex = bunchOfWeights.Length - 1;
+            for (int i = 0; i < lastIndex; i++)
             {
                 bunchOfWeights[i] = GetRandomWeights();
+                sb.AppendLine(Utils.GraphUtil.ToMatrixFormat(bunchOfWeights[i]));
             }
-            new RunGraphWindow(bunchOfWeights).Show();
+            // Not to append a new line
+            bunchOfWeights[lastIndex] = GetRandomWeights();
+            sb.Append(Utils.GraphUtil.ToMatrixFormat(bunchOfWeights[lastIndex]));
+
+            AdjacencyMatrixText = sb.ToString();
+            _bunchOfWeights = bunchOfWeights;
+            InitializeThreads();
         }
+
+        #region Run graphs
+
+        // (iterate<foundCycle>, start, end<elapsed>)
+        Action<Action<int[]>, Action, Action<TimeSpan>> findCyclesByBaB;
+        Action<Action<int[]>, Action, Action<TimeSpan>> findCyclesByLC;
+        public string BaBOutput { get => _baBOutput; set => SetField(ref _baBOutput, value); }
+        public string LCOutput { get => _lcOutput; set => SetField(ref _lcOutput, value); }
+        public string BaBResult { get => _baBResult; set => SetField(ref _baBResult, value); }
+        public string LCResult { get => _lcResult; set => SetField(ref _lcResult, value); }
+
+        Thread babThread;
+        Thread lcThread;
+        private string _baBOutput;
+        private string _lcOutput;
+        private string _baBResult;
+        private string _lcResult;
+        private const string InputGraph = "input_graph.txt";
+        private const string ResultPath = "result_path.txt";
+
+        private void InitializeThreads()
+        {
+            if (babThread != null && babThread.IsAlive)
+                babThread.Abort();
+            if (lcThread != null && lcThread.IsAlive)
+                lcThread.Abort();
+
+            findCyclesByBaB = (onCycleFound, onStart, onEnd) =>
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                int[] cycle = null;
+                for (int i = 0; i < _bunchOfWeights.Length; i++)
+                {
+                    cycle = new BranchAndBound(_bunchOfWeights[i])
+                        .GetShortestHamiltonianCycle();
+                    if (i == 0)
+                        Dispatcher.Invoke(onStart);
+                    Dispatcher.BeginInvoke(onCycleFound, cycle);
+                }
+                Dispatcher.BeginInvoke(onEnd, sw.Elapsed);
+                if (_bunchOfWeights.Length == 1)
+                {
+                    var graph = Utils.GraphUtil.ToMatrixFormat(_bunchOfWeights[0]);
+                    File.WriteAllText(InputGraph, graph);
+                    File.WriteAllText(ResultPath, string.Join("-", cycle));
+                }
+            };
+
+            findCyclesByLC = (onCycleFound, onStart, onEnd) =>
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                for (int i = 0; i < _bunchOfWeights.Length; i++)
+                {
+                    var cycle = new LatinComposition(_bunchOfWeights[i])
+                        .GetShortestHamiltonianCycle();
+                    if (i == 0)
+                        Dispatcher.Invoke(onStart);
+                    onCycleFound(cycle);
+                }
+                Dispatcher.BeginInvoke(onEnd, sw.Elapsed);
+            };
+        }
+
+        private void RunBaB(object sender, RoutedEventArgs e)
+        {
+            if ((babThread != null && babThread.IsAlive) || findCyclesByBaB == null)
+                return;
+            BaBOutput = "Ждите...";
+            babThread = new Thread(() =>
+            {
+                findCyclesByBaB(cycle =>
+                {
+                    var path = cycle == null ? "[Путь не найден]" : string.Join("->", cycle);
+                    BaBOutput += path + "\n";
+                }, () => BaBOutput = BaBResult = "", elapsed => BaBResult = elapsed.ToString());
+            });
+            babThread.IsBackground = true;
+            babThread.Start();
+        }
+        private void RunLC(object sender, RoutedEventArgs e)
+        {
+            if ((lcThread != null && lcThread.IsAlive) || findCyclesByLC == null)
+                return;
+            LCOutput = "Ждите...";
+            lcThread = new Thread(() =>
+            {
+                findCyclesByLC(cycle =>
+                {
+                    var path = cycle == null ? "[Путь не найден]" : string.Join("->", cycle);
+                    LCOutput += path + "\n";
+                }, () => LCOutput = LCResult = "", elapsed => LCResult = elapsed.ToString());
+            });
+            lcThread.IsBackground = true;
+            lcThread.Start();
+        }
+        #endregion
 
 
         private void SetField<T>(ref T field, T value, [CallerMemberName]string propertyName = null)

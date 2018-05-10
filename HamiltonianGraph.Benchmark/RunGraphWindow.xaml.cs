@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -23,7 +24,6 @@ namespace HamiltonianGraph.Benchmark
     /// </summary>
     public partial class RunGraphWindow : Window, INotifyPropertyChanged
     {
-        int?[][,] _weights;
         // (iterate<foundCycle>, start, end<elapsed>)
         Action<Action<int[]>, Action, Action<TimeSpan>> findCyclesByBaB;
         Action<Action<int[]>, Action, Action<TimeSpan>> findCyclesByLC;
@@ -34,22 +34,28 @@ namespace HamiltonianGraph.Benchmark
         public RunGraphWindow(int?[][,] bunchOfWeights)
         {
             InitializeComponent();
-            _weights = bunchOfWeights;
             DataContext = this;
 
             findCyclesByBaB = (onCycleFound, onStart, onEnd) =>
             {
                 var sw = new Stopwatch();
                 sw.Start();
+                int[] cycle = null;
                 for (int i = 0; i < bunchOfWeights.Length; i++)
                 {
-                    var cycle = new BranchAndBound(bunchOfWeights[i])
+                    cycle = new BranchAndBound(bunchOfWeights[i])
                         .GetShortestHamiltonianCycle();
                     if (i == 0)
                         Dispatcher.Invoke(onStart);
                     Dispatcher.BeginInvoke(onCycleFound, cycle);
                 }
                 Dispatcher.BeginInvoke(onEnd, sw.Elapsed);
+                if (bunchOfWeights.Length == 1)
+                {
+                    var graph = Utils.GraphUtil.ToMatrixFormat(bunchOfWeights[0]);
+                    File.WriteAllText(InputGraph, graph);
+                    File.WriteAllText(ResultPath, string.Join("-", cycle));
+                }
             };
 
             findCyclesByLC = (onCycleFound, onStart, onEnd) =>
@@ -95,6 +101,8 @@ namespace HamiltonianGraph.Benchmark
         private string _lcOutput;
         private string _baBResult;
         private string _lcResult;
+        private const string InputGraph = "input_graph.txt";
+        private const string ResultPath = "result_path.txt";
 
         private void RunBaB(object sender, RoutedEventArgs e)
         {

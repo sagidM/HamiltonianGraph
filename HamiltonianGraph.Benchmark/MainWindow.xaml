@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HamiltonianGraph.Benchmark"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-	<Grid ShowGridLines="True">
-		<Grid.RowDefinitions>
-			<RowDefinition/>
-			<RowDefinition/>
-			<RowDefinition/>
-			<RowDefinition/>
-			<RowDefinition/>
-		</Grid.RowDefinitions>
-
-		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="0">
+        Title="MainWindow" Height="800" Width="1024"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+	<StackPanel>
+		<StackPanel MaxWidth="300" VerticalAlignment="Center">
 			<Label Content="Количество вершин"/>
 			<StackPanel>
 				<Label Content="Minimum"/>
@@ -34,7 +34,7 @@
 		</StackPanel>
 
 
-		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="1">
+		<StackPanel MaxWidth="300" VerticalAlignment="Center">
 			<Label Content="Диапазон весов"/>
 			<StackPanel>
 				<Label Content="Minimum"/>
@@ -57,20 +57,49 @@
 			</StackPanel>
 		</StackPanel>
 
-		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="2">
+		<StackPanel MaxWidth="300" VerticalAlignment="Center">
 			<Label Content="Плотность графа"/>
 			<Slider Value="{Binding Density}" Minimum="0" Maximum="1" SmallChange="0.1" LargeChange="0.2"/>
 			<TextBox Text="{Binding Density, UpdateSourceTrigger=PropertyChanged}"/>
 		</StackPanel>
 
-		<StackPanel MaxWidth="300" VerticalAlignment="Center" Grid.Row="3">
+		<StackPanel MaxWidth="300" VerticalAlignment="Center">
 			<Label Content="Количество графов"/>
 			<Slider Value="{Binding GraphCount}" Minimum="1" Maximum="1000" SmallChange="1" LargeChange="10"/>
 			<TextBox Text="{Binding GraphCount, UpdateSourceTrigger=PropertyChanged}"/>
 		</StackPanel>
 
-		<StackPanel Grid.Row="5" VerticalAlignment="Center">
-			<Button Margin="10" Width="250" Height="40" Content="Сгенерировать графы" Click="GenerateGraphs"/>
+		<StackPanel VerticalAlignment="Center" Margin="300 0">
+			<Button Margin="10 10 10 20" Width="250" Height="40" Content="Сгенерировать графы" Click="GenerateGraphs"/>
+			<Label Content="Матрица смежности:"/>
+			<TextBox ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"
+					 BorderBrush="Black" BorderThickness="1" TextWrapping="NoWrap" IsReadOnly="True" FontFamily="Consolas"
+					 AcceptsReturn="True" MinLines="4" MaxLines="15" Text="{Binding AdjacencyMatrixText}"/>
 		</StackPanel>
-	</Grid>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="70" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
+			<TextBox Grid.Row="0" Grid.Column="0" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Text="{Binding BaBOutput}"/>
+			<TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Text="{Binding LCOutput}"/>
+
+			<Border Grid.Row="1" Grid.Column="0" BorderThickness="1">
+				<TextBox IsReadOnly="True" Text="{Binding BaBResult, Mode=OneWay, StringFormat='Время: {0}'}" BorderThickness="0"/>
+			</Border>
+			<Border Grid.Row="1" Grid.Column="1" BorderThickness="1">
+				<TextBox IsReadOnly="True" Text="{Binding LCResult, Mode=OneWay, StringFormat='Время: {0}'}" BorderThickness="0"/>
+			</Border>
+
+			<Button Grid.Row="2" Grid.Column="0" Width="300" Height="40" Content="Запустить метод ветвей и границ" Click="RunBaB"/>
+			<Button Grid.Row="2" Grid.Column="1" Width="300" Height="40" Content="Запустить метод латинской композиции" Click="RunLC"/>
+		</Grid>
+	</StackPanel>
 </Window>
